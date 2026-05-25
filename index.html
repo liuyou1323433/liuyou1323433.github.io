@@ -2,402 +2,779 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>OC叙事工坊 - 强制刷新版</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Georgia:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>🍥 粉萌小章鱼 · 情绪罐罐 & 兑换商店</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script type="text/javascript" src="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"></script>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
-            --bg-start:#0f172a; --bg-end:#1e293b; --sidebar-bg:rgba(15,23,42,0.85);
-            --card-bg:#1e293b; --card-border:#334155; --primary:#8b5cf6; --primary-hover:#7c3aed;
-            --primary-light:#c084fc; --text-main:#f1f5f9; --text-muted:#cbd5e1; --input-bg:#0f172a;
-            --danger:#ef4444; --success:#10b981; --node-border:#c084fc; --timeline-line:#8b5cf6;
-            --timeline-item-bg:#0f172a; --toast-bg:#1e293b; --reader-bg:#fef9e6; --reader-text:#3b2e24;
-            --reader-card:#fffaf0;
-        }
-        body.theme-cream {
-            --bg-start:#fef9e6; --bg-end:#f5e9d3; --sidebar-bg:rgba(245,233,211,0.92);
-            --card-bg:#fffaf0; --card-border:#e2d5b6; --primary:#b87333; --primary-hover:#a05a2c;
-            --primary-light:#d6a56e; --text-main:#4a3b28; --text-muted:#6b5a44; --input-bg:#ffffff;
-            --danger:#c23b22; --success:#5f8b4c; --node-border:#b87333; --timeline-line:#b87333;
-            --timeline-item-bg:#fff5e6; --toast-bg:#fffaf0; --reader-bg:#fef9e6; --reader-text:#4a3b28;
-            --reader-card:#ffffff;
-        }
-        body.theme-mint {
-            --bg-start:#e8f5e9; --bg-end:#c8e6d9; --sidebar-bg:rgba(200,230,217,0.92);
-            --card-bg:#f1f8e9; --card-border:#b9d8b3; --primary:#558b2f; --primary-hover:#33691e;
-            --primary-light:#8bc34a; --text-main:#2e5c2e; --text-muted:#4c6a4c; --input-bg:#ffffff;
-            --danger:#c62828; --success:#2e7d32; --node-border:#558b2f; --timeline-line:#558b2f;
-            --timeline-item-bg:#f1f8e9; --toast-bg:#f1f8e9; --reader-bg:#f4f9f0; --reader-text:#2e5c2e;
-            --reader-card:#ffffff;
-        }
-        body.theme-azure {
-            --bg-start:#e3f2fd; --bg-end:#bbdef5; --sidebar-bg:rgba(187,222,245,0.92);
-            --card-bg:#f0f8ff; --card-border:#b3d4f0; --primary:#2c7da0; --primary-hover:#1f5e7e;
-            --primary-light:#6ab0de; --text-main:#1e4a6e; --text-muted:#3a6b8f; --input-bg:#ffffff;
-            --danger:#c62828; --success:#2e7d32; --node-border:#2c7da0; --timeline-line:#2c7da0;
-            --timeline-item-bg:#f0f8ff; --toast-bg:#f0f8ff; --reader-bg:#ecf5fc; --reader-text:#1e4a6e;
-            --reader-card:#ffffff;
+            --bg-sand: #FFF6E8;
+            --bikini-yellow: #F7D44A;
+            --text-deep: #5A3E2B;
+            --shadow-soft: 0 8px 20px rgba(0,0,0,0.05);
         }
         body {
-            font-family:'Inter',sans-serif;
-            background:linear-gradient(135deg,var(--bg-start)0%,var(--bg-end)100%);
-            min-height:100vh; color:var(--text-main); transition:background 0.3s ease,color 0.2s;
+            background-color: #FFF3E0;
+            background-image: radial-gradient(circle at 15% 30%, rgba(247,212,74,0.12) 2%, transparent 2.5%);
+            background-size: 32px 32px;
+            font-family: 'Quicksand', 'Segoe UI', cursive;
+            color: var(--text-deep);
+            min-height: 100vh;
+            padding-bottom: 80px;
         }
-        .login-container { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.96); backdrop-filter:blur(8px); display:flex; justify-content:center; align-items:center; z-index:1000; }
-        .login-card { background:var(--card-bg); backdrop-filter:blur(12px); border-radius:2rem; padding:2rem; width:360px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5); border:1px solid var(--card-border); text-align:center; }
-        .greeting-line { font-size:0.9rem; color:var(--primary-light); margin-bottom:1.5rem; }
-        .input-group { margin-bottom:1rem; }
-        .input-group input { width:100%; padding:0.75rem 1rem; background:var(--input-bg); border:1px solid var(--card-border); border-radius:1rem; color:var(--text-main); outline:none; }
-        .login-btn { width:100%; padding:0.75rem; background:var(--primary); border:none; border-radius:1rem; color:white; font-weight:600; cursor:pointer; }
-        .manage-icon-sm { margin-top:1rem; font-size:0.85rem; color:var(--text-muted); cursor:pointer; display:inline-block; background:rgba(148,163,184,0.1); padding:0.3rem 0.8rem; border-radius:2rem; }
-        .login-theme-selector { position:fixed; bottom:20px; right:20px; z-index:1100; display:flex; gap:8px; background:rgba(0,0,0,0.5); padding:6px 12px; border-radius:3rem; backdrop-filter:blur(4px); }
-        .theme-btn { width:30px; height:30px; border-radius:50%; cursor:pointer; border:2px solid transparent; }
-        .theme-btn.active { border-color:white; transform:scale(1.05); }
-        .theme-default { background:linear-gradient(135deg,#8b5cf6,#4c1d95); }
-        .theme-cream { background:#fef9e6; border:1px solid #e2d5b6; }
-        .theme-mint { background:#e8f5e9; border:1px solid #b9d8b3; }
-        .theme-azure { background:#e3f2fd; border:1px solid #b3d4f0; }
-        .app-container { display:none; height:100vh; overflow:hidden; }
-        .sidebar { width:280px; background:var(--sidebar-bg); backdrop-filter:blur(8px); border-right:1px solid var(--card-border); display:flex; flex-direction:column; padding:2rem 0; flex-shrink:0; }
-        .nav-item { display:flex; align-items:center; gap:12px; padding:12px 24px; margin:4px 12px; border-radius:1rem; cursor:pointer; color:var(--text-muted); transition:0.2s; }
-        .nav-item.active { background:var(--primary); color:white; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
-        .main-content { flex:1; overflow-y:auto; padding:2rem; background:rgba(0,0,0,0.1); }
-        .card { background:var(--card-bg); border-radius:1.5rem; padding:1.5rem; border:1px solid var(--card-border); margin-bottom:1.5rem; }
-        .graph-wrapper { position:relative; }
-        #network-container { width:100%; height:60vh; background:var(--input-bg); border-radius:1rem; border:1px solid var(--card-border); }
-        .node-info-corner { position:absolute; top:20px; right:20px; background:var(--card-bg); backdrop-filter:blur(12px); border-radius:1rem; padding:12px 18px; max-width:280px; border-left:4px solid var(--primary); z-index:20; display:none; }
-        .relation-builder { margin-top:12px; padding:12px; background:var(--input-bg); border-radius:1rem; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-        .relation-builder input, .relation-builder select { width:auto; flex:1; min-width:100px; }
-        .character-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1.5rem; margin-top:1rem; }
-        .character-card { background:var(--input-bg); border-radius:1.2rem; overflow:hidden; transition:transform 0.2s; border:1px solid var(--card-border); cursor:pointer; text-align:center; padding:1rem 0.5rem; position:relative; }
-        .character-card.role-protagonist { border:3px solid #fbbf24; box-shadow:0 0 12px rgba(251,191,36,0.5); }
-        .character-card.role-antagonist { border:3px solid #ef4444; box-shadow:0 0 8px rgba(239,68,68,0.4); }
-        .character-card.role-supporter { border:2px solid #3b82f6; }
-        .character-card.role-extra { border:1px solid #8b5cf6; }
-        .protagonist-badge { position:absolute; top:6px; right:10px; background:#fbbf24; color:#0f172a; font-size:0.7rem; padding:2px 8px; border-radius:20px; }
-        .character-avatar { width:90px; height:90px; border-radius:50%; object-fit:cover; background:#ccc; margin:0 auto 0.6rem; display:block; border:2px solid var(--primary); cursor:pointer; }
-        .character-name { font-weight:600; font-size:1.1rem; margin:6px 0 4px; }
-        .character-info { font-size:0.7rem; background:var(--card-border); border-radius:20px; padding:4px 8px; margin:6px 0; display:inline-block; }
-        .card-buttons { display:flex; justify-content:center; gap:12px; margin-top:8px; }
-        .sort-handle { cursor:move; margin-right:8px; color:var(--text-muted); }
-        .filter-buttons { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:1.5rem; }
-        .filter-chip { background:var(--card-border); padding:6px 14px; border-radius:2rem; cursor:pointer; font-size:0.8rem; color:var(--text-muted); }
-        .filter-chip.active { background:var(--primary); color:white; }
-        .story-tabs { display:flex; gap:12px; border-bottom:1px solid var(--card-border); margin-bottom:1rem; }
-        .story-tab { padding:8px 20px; cursor:pointer; border-radius:2rem 2rem 0 0; background:var(--input-bg); color:var(--text-muted); }
-        .story-tab.active { background:var(--primary); color:white; }
-        .timeline-controls { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1.5rem; background:var(--input-bg); padding:1rem; border-radius:1rem; }
-        .calendar-unit { font-size:1.2rem; font-weight:bold; background:var(--card-border); padding:0.3rem 1rem; border-radius:2rem; cursor:pointer; }
-        .range-filter { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-        .range-filter input { width:100px; }
-        .timeline-vertical { position:relative; padding-left:2rem; margin-top:1rem; }
-        .timeline-vertical::before { content:''; position:absolute; left:12px; top:0; bottom:0; width:2px; background:var(--timeline-line); }
-        .timeline-item,.storyline-item { margin-bottom:1.8rem; background:var(--timeline-item-bg); border-radius:1rem; padding:1rem 1.2rem; border-left:4px solid var(--primary-light); }
-        .timeline-year { font-weight:700; font-size:1.2rem; color:var(--primary-light); margin-bottom:0.3rem; }
-        .item-actions { display:flex; gap:12px; margin-top:10px; flex-wrap:wrap; }
-        .timeline-image,.storyline-image { max-width:100%; max-height:120px; border-radius:0.5rem; margin-top:8px; cursor:pointer; }
-        .chapter-list { display:flex; flex-direction:column; gap:8px; margin-bottom:1rem; max-height:300px; overflow-y:auto; }
-        .chapter-item { background:var(--input-bg); padding:10px 16px; border-radius:1rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer; border-left:3px solid var(--primary); }
-        .draft-item,.image-item { background:var(--input-bg); padding:8px 12px; border-radius:1rem; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
-        .image-card { width:120px; text-align:center; cursor:pointer; transition:transform 0.1s; }
-        .image-card:hover { transform:scale(1.02); }
-        .image-card img { width:100%; height:100px; object-fit:cover; border-radius:0.5rem; border:1px solid var(--card-border); }
-        .custom-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:5000; }
-        .custom-modal-content { background:var(--card-bg); border-radius:1.5rem; width:700px; max-width:90%; padding:1.8rem; border:1px solid var(--primary); max-height:85vh; overflow-y:auto; }
-        .reader-modal { background:var(--reader-bg); color:var(--reader-text); }
-        .reader-content { font-family:'Georgia','Times New Roman',serif; font-size:1.1rem; line-height:1.8; text-indent:2em; margin:1.5rem 0; white-space:pre-wrap; }
-        .reader-title { font-size:1.8rem; font-weight:bold; text-align:center; margin-bottom:1rem; }
-        .reader-nav { display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--card-border); }
-        .world-tree { margin-left:0rem; }
-        .world-item { background:var(--input-bg); border-radius:1rem; margin-bottom:0.8rem; border:1px solid var(--card-border); overflow:hidden; }
-        .world-header { display:flex; justify-content:space-between; align-items:center; padding:0.8rem 1rem; cursor:pointer; background:var(--card-bg); flex-wrap:wrap; gap:6px; }
-        .world-title { font-weight:bold; font-size:1rem; display:flex; align-items:center; gap:8px; user-select:none; }
-        .world-content { display:none; padding:1rem; border-top:1px solid var(--card-border); }
-        .world-content.active { display:block; }
-        .world-content textarea { width:100%; min-height:150px; background:var(--input-bg); border:1px solid var(--card-border); border-radius:0.75rem; padding:0.75rem; color:var(--text-main); font-family:'Georgia',serif; }
-        .world-images { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
-        .world-image-item { position:relative; width:100px; text-align:center; }
-        .world-image-item img { width:100%; height:80px; object-fit:cover; border-radius:0.5rem; border:1px solid var(--card-border); cursor:pointer; }
-        .delete-world-img { position:absolute; top:-8px; right:-8px; background:var(--danger); border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.7rem; color:white; z-index:2; }
-        .children-container { margin-left:1.5rem; margin-top:0.5rem; }
-        .faction-card { background:var(--input-bg); border-radius:1.2rem; padding:1rem; margin-bottom:1rem; border-left:4px solid var(--primary); display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-        .faction-avatar { width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid var(--primary); cursor:pointer; }
-        .faction-info { flex:1; min-width:200px; }
-        .member-tag { background:var(--card-border); border-radius:20px; padding:4px 10px; display:inline-flex; align-items:center; gap:6px; margin:4px; }
-        .account-item { background:var(--input-bg); border-radius:1rem; padding:12px; margin-bottom:10px; }
-        .char-tabs { display:flex; gap:8px; border-bottom:1px solid var(--card-border); margin-bottom:1rem; }
-        .char-tab { padding:6px 16px; cursor:pointer; border-radius:2rem 2rem 0 0; background:var(--input-bg); }
-        .char-tab.active { background:var(--primary); color:white; }
-        .tab-pane { display:none; }
-        .tab-pane.active { display:block; }
-        button { background:var(--primary); border:none; padding:8px 18px; border-radius:2rem; color:white; cursor:pointer; font-family:inherit; font-size:0.85rem; }
-        button.secondary { background:#334155; }
-        button.small-btn { padding:4px 12px; font-size:0.75rem; }
-        input,textarea,select { background:var(--input-bg); border:1px solid var(--card-border); border-radius:0.75rem; padding:8px 12px; color:var(--text-main); width:100%; margin-top:4px; font-family:inherit; }
-        .flex-between { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
-        .search-box { margin-bottom:1rem; display:flex; gap:8px; }
-        .relation-item { background:var(--card-bg); border-radius:1rem; padding:8px 12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
-        .big-image-modal { max-width:90vw; max-height:90vh; }
-        .big-image-modal img { max-width:100%; max-height:80vh; object-fit:contain; }
-        .custom-toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--toast-bg); color:var(--text-main); padding:10px 24px; border-radius:2rem; border-left:4px solid var(--primary); z-index:9999; animation:fadeInUp 0.3s ease, fadeOut 0.5s 1.7s ease forwards; box-shadow:0 8px 24px rgba(0,0,0,0.3); }
-        @keyframes fadeInUp { from{opacity:0;transform:translateX(-50%) translateY(20px);} to{opacity:1;transform:translateX(-50%) translateY(0);} }
-        @keyframes fadeOut { to{opacity:0;transform:translateX(-50%) translateY(-10px);} }
+        .wave-header {
+            background: linear-gradient(135deg, #FFE6B3, #FFD98C);
+            padding: 0.8rem 1rem;
+            border-bottom: 3px solid #FFC06E;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .title-area h1 { font-size: 1.3rem; font-weight: 700; color: #B4622A; text-shadow: 2px 2px 0 #FFEAA0; }
+        .title-area p { font-size: 0.65rem; }
+        .gold-display { background: #FFEAA0; padding: 5px 12px; border-radius: 40px; font-weight: bold; font-size: 0.85rem; }
+        .app-layout {
+            display: flex;
+            flex-direction: column;
+            max-width: 100%;
+            margin: 0;
+            padding: 0.8rem;
+            gap: 1rem;
+        }
+        /* 底部导航栏 */
+        .sponge-sidebar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 252, 240, 0.96);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0.6rem 0.8rem 0.9rem;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            border-top: 1px solid rgba(255, 224, 181, 0.6);
+            z-index: 200;
+            border-radius: 28px 28px 0 0;
+        }
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+            padding: 6px 0;
+            border-radius: 32px;
+            transition: all 0.2s ease;
+        }
+        .nav-item i {
+            font-size: 26px;
+            background: transparent;
+            padding: 8px;
+            border-radius: 30px;
+            color: #C5915E;
+            transition: 0.1s;
+        }
+        .nav-item span {
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 4px;
+            color: #A87A4A;
+        }
+        .nav-item.active i {
+            background: var(--bikini-yellow);
+            color: #B4622A;
+            box-shadow: 0 2px 8px rgba(247, 212, 74, 0.4);
+        }
+        .nav-item.active span {
+            color: #B4622A;
+            font-weight: 700;
+        }
+        .nav-item:active {
+            transform: scale(0.96);
+        }
+        .main-panel {
+            background: rgba(255, 252, 242, 0.9);
+            backdrop-filter: blur(8px);
+            border-radius: 32px;
+            padding: 1.2rem;
+            box-shadow: var(--shadow-soft);
+            overflow-y: auto;
+            width: 100%;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 0.8rem;
+        }
+        .mission-card, .countdown-card, .todo-card, .shop-card, .book-card, .jar-card {
+            background: #FFFCF4;
+            border-radius: 24px;
+            padding: 0.8rem;
+            box-shadow: 5px 5px 0 #F3DEB2;
+            transition: 0.1s;
+            text-align: center;
+            cursor: pointer;
+            word-break: break-word;
+        }
+        .book-cover { height: 120px; background-size: cover; background-position: center; border-radius: 20px; margin-bottom: 6px; }
+        .btn-sm {
+            background: #F3E5D2;
+            border: none;
+            border-radius: 40px;
+            padding: 6px 14px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 2px;
+        }
+        .btn-primary {
+            background: #FFDEAC;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .emotion-split-bottom {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.2rem 0 0.5rem;
+        }
+        .emotion-split-card {
+            background: #FFFCF4;
+            border-radius: 32px;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 8px 8px 0 #F3DEB2;
+        }
+        .jar-header-area {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .jar-input-card, .jar-random-card {
+            background: #FFF7E8;
+            border-radius: 32px;
+            padding: 0.8rem;
+            box-shadow: 5px 5px 0 #F3DEB2;
+        }
+        .response-area {
+            background: #FFF7E8;
+            border-radius: 32px;
+            padding: 0.8rem;
+            margin: 1rem 0;
+        }
+        .pet-corner {
+            position: fixed;
+            bottom: 90px;
+            right: 12px;
+            z-index: 150;
+            background: rgba(255, 248, 215, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 50px;
+            padding: 4px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            border: 2px solid #FFD966;
+        }
+        .pet-avatar { width: 42px; cursor: pointer; }
+        .pet-stats { font-size: 0.6rem; min-width: 60px; }
+        .pet-buttons button { padding: 3px 8px; font-size: 0.6rem; cursor: pointer; }
+        .pet-bubble {
+            position: absolute;
+            bottom: 70px;
+            right: 60px;
+            white-space: nowrap;
+            font-size: 0.7rem;
+            padding: 4px 12px;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 4px 4px 0 #E7C892;
+            pointer-events: none;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(70, 45, 20, 0.6);
+            backdrop-filter: blur(6px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-card {
+            background: #FFFCF0;
+            border-radius: 48px;
+            max-width: 90%;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+            box-shadow: 20px 20px 0 #E6D2AE;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 60px;
+            border: 1px solid #F5DFBC;
+            background: #FFFBF2;
+            margin: 6px 0;
+            font-family: inherit;
+            font-size: 0.9rem;
+            word-break: break-word;
+        }
+        textarea {
+            border-radius: 24px;
+            resize: vertical;
+        }
+        .cute-upload { background: #FCE9C8; border-radius: 60px; padding: 6px 12px; display: inline-block; cursor: pointer; margin: 6px 0; }
+        .preview-img { max-width: 80px; border-radius: 20px; margin-top: 6px; }
+        .shop-icon-img { width: 60px; height: 60px; object-fit: cover; border-radius: 30px; margin: 0 auto 8px; display: block; }
+        .lock-badge { position: absolute; top: 8px; right: 12px; color: #C27E3A; font-size: 1rem; }
+        .note-card { background: #FEFAF2; border-radius: 28px; padding: 0.8rem; margin-bottom: 0.8rem; border-left: 8px solid #FFCF8A; }
+        .note-title {
+            font-weight: 800;
+            font-size: 1rem;
+            background: #FFF1DF;
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            margin-bottom: 6px;
+        }
+        .note-card .note-content {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+        .history-item { background: #FFFBF0; border-radius: 28px; padding: 8px 12px; margin: 6px 0; border-left: 8px solid #FFD966; font-size: 0.75rem; }
+        .todo-delete { background: #FFE0C0; border: none; border-radius: 40px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; margin-top: 8px; }
+        .flip-scroll-area { max-height: 50vh; overflow-y: auto; margin: 12px 0; }
+        .exchange-rate { background: #FFEFD0; border-radius: 40px; padding: 4px 12px; display: inline-block; font-size: 0.7rem; cursor: pointer; }
+        .shop-price-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 6px;
+            font-size: 0.8rem;
+        }
+        @media (min-width: 600px) {
+            body { padding-bottom: 0; }
+            .app-layout { flex-direction: row; max-width: 1400px; margin: 1rem auto; padding: 0 1rem; }
+            .sponge-sidebar {
+                position: relative;
+                flex-direction: column;
+                width: 90px;
+                background: rgba(255, 248, 225, 0.85);
+                border-radius: 48px;
+                padding: 1.5rem 0;
+                gap: 1.5rem;
+                bottom: auto;
+                box-shadow: 6px 6px 0 rgba(185, 127, 68, 0.1);
+            }
+            .nav-item i { font-size: 28px; background: #FFF7E0; padding: 12px; width: 54px; }
+            .nav-item span { font-size: 11px; }
+            .card-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 1.5rem; }
+            .jar-header-area { flex-direction: row; }
+            .pet-corner { bottom: 20px; right: 20px; padding: 8px 18px; }
+            .pet-avatar { width: 64px; }
+            .main-panel { padding: 1.8rem; }
+        }
+        @media (max-width: 480px) {
+            .book-title { font-size: 0.75rem; }
+            .todo-icon { font-size: 1.5rem; }
+            .nav-item i { font-size: 22px; padding: 6px; }
+            .nav-item span { font-size: 9px; }
+            .sponge-sidebar { padding: 0.5rem 0.5rem 0.8rem; }
+            .note-title { font-size: 0.9rem; }
+        }
     </style>
 </head>
-<body class="theme-cream">
-<div id="loginPanel" class="login-container">
-        <div class="login-card">
-            <h2><i class="fas fa-scroll"></i> 叙事工坊</h2>
-            <div class="greeting-line" id="randomGreeting">加载中...</div>
-            <div class="input-group"><input type="text" id="loginUsername" placeholder="账号"></div>
-            <div class="input-group"><input type="password" id="loginPassword" placeholder="密码"></div>
-            <button class="login-btn" id="doLoginBtn">进入世界</button>
-            <div style="margin-top:1rem;"><span class="manage-icon-sm" id="openAccountManageBtn"><i class="fas fa-users-cog"></i> 管理账号</span></div>
-        </div>
-        <div class="login-theme-selector" id="loginThemeSelector">
-            <div class="theme-btn theme-cream" data-theme="cream" title="护眼米黄"></div>
-            <div class="theme-btn theme-mint" data-theme="mint" title="淡绿清新"></div>
-            <div class="theme-btn theme-azure" data-theme="azure" title="浅蓝宁静"></div>
-            <div class="theme-btn theme-default" data-theme="default" title="暗夜模式"></div>
-        </div>
+<body>
+<div class="wave-header">
+    <div class="title-area"><h1><i class="fas fa-jellyfish"></i> 粉萌小章鱼 · 情绪罐罐</h1><p>✦ 丢烦恼 · 赚金币 · 九宫格好物 ✦</p></div>
+    <div class="gold-display"><i class="fas fa-coins"></i> <span id="goldAmount">0</span> 金币</div>
+</div>
+
+<div class="app-layout">
+    <div class="sponge-sidebar" id="sidebarNav">
+        <div class="nav-item active" data-section="shelf"><i class="fas fa-books"></i><span>📚 书架</span></div>
+        <div class="nav-item" data-section="tasks"><i class="fas fa-tasks"></i><span>🍔 任务</span></div>
+        <div class="nav-item" data-section="countdown"><i class="fas fa-hourglass-half"></i><span>⏳ 倒计时</span></div>
+        <div class="nav-item" data-section="todo"><i class="fas fa-list-check"></i><span>📋 待办</span></div>
+        <div class="nav-item" data-section="emotionJar"><i class="fas fa-jar"></i><span>🗑️ 情绪罐罐</span></div>
+        <div class="nav-item" data-section="exchange"><i class="fas fa-gift"></i><span>🎁 兑换</span></div>
     </div>
-    <div id="appMain" class="app-container">
-        <div class="sidebar">
-            <div style="padding:0 24px 24px;"><h3><i class="fas fa-dragon"></i> OC Workspace</h3><div id="secretAlert"></div></div>
-            <div class="nav-item active" data-view="graph"><i class="fas fa-project-diagram"></i> <span>人物关系图</span></div>
-            <div class="nav-item" data-view="characters"><i class="fas fa-address-card"></i> <span>人物档案</span></div>
-            <div class="nav-item" data-view="timeline"><i class="fas fa-history"></i> <span>时间线·故事线</span></div>
-            <div class="nav-item" data-view="world"><i class="fas fa-globe-asia"></i> <span>世界观</span></div>
-            <div class="nav-item" data-view="factions"><i class="fas fa-flag-checkered"></i> <span>阵营</span></div>
-            <div class="nav-item" data-view="drafts"><i class="fas fa-pencil-alt"></i> <span>草稿箱</span></div>
-            <div class="nav-item" data-view="images"><i class="fas fa-images"></i> <span>图片库</span></div>
-            <div class="nav-item" data-view="mainstory"><i class="fas fa-book-open"></i> <span>正文</span></div>
-            <div class="nav-item" data-view="ifline"><i class="fas fa-code-branch"></i> <span>IF线</span></div>
-            <div style="margin-top:auto; padding:20px 24px;"><i class="fas fa-user-circle"></i> <span id="currentUserSpan"></span><button id="logoutBtn" class="secondary" style="margin-top:10px;width:100%;">登出</button></div>
-        </div>
-        <div class="main-content">
-            <div id="graphView" class="view-pane"><div class="card graph-wrapper"><h3><i class="fas fa-share-alt"></i> 关系图谱 (拖拽节点，双击关系线可编辑)</h3><div id="network-container"></div><div id="nodeInfoCorner" class="node-info-corner"><div><strong id="cornerCharName"></strong></div><div id="cornerCharSlogan" style="font-size:0.8rem;margin-top:4px;"></div><button id="cornerJumpBtn" style="margin-top:8px;">📖 查看档案</button></div><div class="relation-builder"><input type="text" id="relSource" placeholder="角色A" list="characterList"><span style="font-size:0.8rem;">→</span><input type="text" id="relType" placeholder="关系 (例: 喜欢)"><span style="font-size:0.8rem;">→</span><input type="text" id="relTarget" placeholder="角色B" list="characterList"><button id="addRelationBtnGraph">➕ 添加/更新有向关系</button></div></div></div>
-            <div id="charactersView" class="view-pane" style="display:none;"><div class="flex-between"><h3>九宫格·人物档案</h3><div><button id="sortCharactersBtn">✏️ 排序模式</button><button id="newCharacterBtn" style="margin-left:8px;">新建角色</button></div></div><div class="filter-buttons" id="categoryFilterBar"></div><div id="characterListContainer" class="character-grid"></div></div>
-            <div id="timelineView" class="view-pane" style="display:none;"><div class="card"><div class="story-tabs"><div class="story-tab active" data-tab="timeline">📅 大事年表</div><div class="story-tab" data-tab="storyline">📖 故事线</div></div><div id="timelinePanel"><div class="timeline-controls"><div><span class="calendar-unit" id="calendarUnitDisplay">星历</span></div><div class="range-filter"><input type="number" id="yearFrom" placeholder="起始年"><span>—</span><input type="number" id="yearTo" placeholder="结束年"><button id="applyYearRangeBtn">筛选</button></div></div><div id="timelineVerticalContainer" class="timeline-vertical"></div><button id="addTimelineEventBtn">添加大事记</button></div><div id="storylinePanel" style="display:none;"><div class="flex-between"><h3>故事线</h3><button id="addStoryBeatBtn">添加剧情节点</button></div><div id="storylineContainer" class="timeline-vertical"></div></div></div></div>
-            <div id="worldView" class="view-pane" style="display:none;"><div class="card"><div class="flex-between"><h3><i class="fas fa-globe"></i> 世界观 · 层级条目</h3><button id="addWorldRootBtn">+ 添加根节点</button></div><div id="worldTreeContainer" class="world-tree" style="margin-top:1rem;"></div></div></div>
-            <div id="factionsView" class="view-pane" style="display:none;"><div class="card"><div class="flex-between"><h3>势力阵营</h3><button id="addFactionBtn">新建阵营</button></div><div id="factionsContainer"></div></div></div>
-            <div id="draftsView" class="view-pane" style="display:none;"><div class="card"><div class="flex-between"><h3><i class="fas fa-pencil-alt"></i> 草稿箱</h3><button id="newDraftBtn">+ 新建草稿</button></div><div id="draftsList"></div></div></div>
-            <div id="imagesView" class="view-pane" style="display:none;"><div class="card"><div class="flex-between"><h3><i class="fas fa-images"></i> 图片库</h3><button id="uploadImageBtn">+ 上传图片</button></div><div id="imagesList" style="display:flex; flex-wrap:wrap; gap:12px; margin-top:1rem;"></div></div></div>
-            <div id="mainstoryView" class="view-pane" style="display:none;"><div class="card"><h3>正文 · 章节叙事</h3><div class="search-box"><input type="text" id="chapterSearch" placeholder="搜索章节..."><button id="searchChapterBtn">搜索</button></div><div class="flex-between"><button id="newChapterBtn">新建章节</button><span id="chapterCount"></span></div><div class="chapter-list" id="chapterList"></div><div class="flex-between" style="margin-top:1rem;"><button id="previewChapterBtn" style="background:var(--primary-light);">📖 阅读模式</button></div></div></div>
-            <div id="iflineView" class="view-pane" style="display:none;"><div class="card"><h3>IF线 · 分支叙事</h3><div class="search-box"><input type="text" id="ifSearch" placeholder="搜索IF线..."><button id="searchIfBtn">搜索</button></div><div class="flex-between"><button id="newIfChapterBtn">新建IF分支</button><span id="ifCount"></span></div><div class="chapter-list" id="ifChapterList"></div></div></div>
-        </div>
+
+    <div id="shelfPanel" class="main-panel"><div class="flex-between"><h2><i class="fas fa-books"></i> 我的小书架</h2><button id="newBookBtn" class="btn-primary"><i class="fas fa-plus-circle"></i> 新建书籍</button></div><div id="bookshelfGrid" class="card-grid"></div></div>
+    <div id="notesPanel" class="main-panel" style="display:none;"><div class="flex-between"><button id="backToShelfBtn" class="btn-sm"><i class="fas fa-arrow-left"></i> 返回</button><h3 id="currentBookName"></h3><div><button id="sortAscBtn" class="btn-sm">🕒 旧→新</button><button id="sortDescBtn" class="btn-sm">🕒 新→旧</button></div><button id="addNoteBtn" class="btn-sm"><i class="fas fa-feather"></i> 新笔记</button></div><div id="notesContainer"></div></div>
+    
+    <div id="tasksPanel" class="main-panel" style="display:none;"><div class="flex-between"><h2><i class="fas fa-tasks"></i> 贝壳餐厅任务 · 九宫格</h2><div><button id="viewTaskHistoryBtn" class="btn-sm">📜 历史</button><button id="newTaskBtn" class="btn-primary"><i class="fas fa-plus"></i> 新任务</button></div></div><div id="tasksGrid" class="card-grid"></div><p style="margin-top:0.8rem; font-size:0.65rem;">✨ 单击任务领取奖励，双击删除（写原因减金币）</p></div>
+    
+    <div id="countdownPanel" class="main-panel" style="display:none;"><div class="flex-between"><h2><i class="fas fa-hourglass-half"></i> 重要日子 · 九宫格</h2><button id="newCountdownBtn" class="btn-primary"><i class="fas fa-plus"></i> 新建倒计时</button></div><div id="countdownGrid" class="card-grid"></div></div>
+    
+    <div id="todoPanel" class="main-panel" style="display:none;"><div class="flex-between"><h2><i class="fas fa-list-check"></i> 贝壳小窝待办 · 九宫格</h2><div><button id="viewTodoHistoryBtn" class="btn-sm">📜 历史</button><button id="newTodoBtn" class="btn-primary"><i class="fas fa-plus"></i> 添加待办</button></div></div><div id="todoGrid" class="card-grid"></div><p style="margin-top:0.8rem; font-size:0.65rem;">✨ 单击待办完成（+1金币），双击编辑，点击🗑️删除</p></div>
+    
+    <div id="emotionJarPanel" class="main-panel" style="display:none;"><div class="flex-between"><h2><i class="fas fa-jar"></i> 情绪罐罐 · 心事收容所</h2></div><div class="jar-header-area"><div class="jar-input-card"><i class="fas fa-feather-alt"></i> <strong>写下烦恼，丢进罐罐</strong><textarea id="newWorryText" rows="2" placeholder="例：今天和小海星闹别扭了..."></textarea><button id="addToJarBtn" class="btn-primary" style="margin-top:6px;"><i class="fas fa-trash-alt"></i> 丢进罐罐</button></div><div class="jar-random-card"><i class="fas fa-dice-d6"></i> <strong>随机抽一张纸条</strong><div id="drawContent" class="draw-content-box" style="background:#FFF7E8; border-radius:28px; padding:10px; margin:10px 0; min-height:70px; font-size:0.8rem;">✨ 点击下方按钮抽取 ✨</div><button id="randomDrawBtn" class="btn-primary"><i class="fas fa-magic"></i> 抽一张</button></div></div><div class="emotion-split-bottom"><div class="emotion-split-card" data-type="pending"><i class="fas fa-fire"></i><h3>🔥 想发泄的</h3><p>未回应的烦恼纸条</p><button class="btn-primary viewPapersBtn" data-type="pending">📜 查看纸条</button></div><div class="emotion-split-card" data-type="resolved"><i class="fas fa-check-circle"></i><h3>✨ 已回应的</h3><p>已被治愈的心事</p><button class="btn-primary viewPapersBtn" data-type="resolved">🌸 查看回忆</button></div></div></div>
+    <div id="emotionBookDetailPanel" class="main-panel" style="display:none;"><div class="flex-between"><button id="backToJarBtn" class="btn-sm"><i class="fas fa-arrow-left"></i> 返回罐罐</button><h3 id="emotionBookTitle"></h3></div><div id="emotionPapersGrid" class="card-grid"></div></div>
+
+    <div id="exchangePanel" class="main-panel" style="display:none;"><div class="flex-between"><h2><i class="fas fa-gift"></i> 粉萌小章鱼 · 兑换商店</h2><div><span id="exchangeRateDisplay" class="exchange-rate"><i class="fas fa-coins"></i> <span id="rateValue">10</span> 金币/元</span><button id="viewHistoryBtn" class="btn-sm">📜 历史</button><button id="newExchangeItemBtn" class="btn-primary"><i class="fas fa-plus"></i> 新建物品</button><button id="resetAllDataBtn" class="btn-sm" style="background:#FFC09F;"><i class="fas fa-undo-alt"></i> 重置</button></div></div><div id="exchangeGrid" class="card-grid"></div><p style="margin-top:0.8rem; font-size:0.65rem;">✨ 双击商品编辑，点击「兑换」消耗金币～ 双击上方汇率修改</p></div>
+</div>
+
+<div class="pet-corner" id="petArea">
+    <!-- 粉萌小章鱼 SVG -->
+    <div class="pet-avatar" id="petAvatar">
+        <svg viewBox="0 0 100 100" width="42" height="42">
+            <circle cx="50" cy="55" r="30" fill="#FFB7C5" stroke="#E88F9E" stroke-width="2"/>
+            <!-- 眼睛 -->
+            <circle cx="38" cy="48" r="5" fill="white"/>
+            <circle cx="62" cy="48" r="5" fill="white"/>
+            <circle cx="40" cy="47" r="2.5" fill="#4A2A2A"/>
+            <circle cx="64" cy="47" r="2.5" fill="#4A2A2A"/>
+            <!-- 微笑 -->
+            <path d="M45 62 Q50 68 55 62" stroke="#D96F7E" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <!-- 小腮红 -->
+            <circle cx="32" cy="58" r="4" fill="#FF8C9E" opacity="0.6"/>
+            <circle cx="68" cy="58" r="4" fill="#FF8C9E" opacity="0.6"/>
+            <!-- 触手 -->
+            <path d="M25 70 Q15 80 20 88" stroke="#FFB7C5" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M75 70 Q85 80 80 88" stroke="#FFB7C5" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M32 78 Q28 88 35 95" stroke="#FFB7C5" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M68 78 Q72 88 65 95" stroke="#FFB7C5" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M45 82 Q42 92 48 98" stroke="#FFB7C5" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M55 82 Q58 92 52 98" stroke="#FFB7C5" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- 头顶小花 -->
+            <circle cx="50" cy="28" r="6" fill="#FFE0A3" stroke="#E5B83C" stroke-width="1.5"/>
+            <circle cx="50" cy="28" r="3" fill="#FFB347"/>
+        </svg>
     </div>
-    <datalist id="characterList"></datalist>
+    <div class="pet-stats">🍔 <span id="hungerVal">100</span>%<br>❤️ <span id="loveVal">80</span>%</div>
+    <div class="pet-buttons"><button id="feedBtn"><i class="fas fa-fish"></i></button><button id="petBtn"><i class="fas fa-hand-sparkles"></i></button></div>
+    <div id="petBubble" class="pet-bubble" style="opacity:0;">🐙 嘿！今天也要开心～</div>
+</div>
+
 <script>
-        (function() {
-            // ================== 核心变量 ==================
-            let accounts=[],currentAccount=null,currentOC=null,network=null;
-            let currentCharFilter="all",isSortingMode=false;
-            const greetingMessages=["✨ 欢迎登录，亲爱的造物主 ✨","📖 编织命运的丝线","⚔️ 创世者归来","🌙 星辰为你加冕"];
-            const STORAGE_ACCOUNTS = 'oc_accounts_force_refresh_v2';
+    // ---------- 完整功能代码（适配手机，所有交互正常）----------
+    let appData = {
+        books: [], tasks: [], taskHistory: [], countdowns: [], todos: [], todoHistory: [], emotionJars: [],
+        exchangeItems: [], exchangeHistory: [], gold: 380,
+        pet: { hunger: 90, love: 85, lastUpdate: Date.now() },
+        quotesList: [], exchangeRate: 10
+    };
+    let currentBookId = null, noteSortOrder = "desc", currentPreviewNotes = [], currentPreviewIndex = 0;
+    let countdownTimers = [], currentDrawPaperId = null, currentEmotionBookType = null;
 
-            // ================== 工具函数 ==================
-            function showMessage(t,e){const n=document.createElement('div');n.className='custom-toast';n.style.borderLeftColor=e?'#ef4444':'var(--primary)';n.innerText=t;document.body.appendChild(n);setTimeout(()=>n.remove(),2200)}
-            function customPrompt(t,e="",n=""){return new Promise(s=>{const o=document.createElement('div');o.className='custom-modal';o.innerHTML=`<div class="custom-modal-content"><h3>${t}</h3><input type="text" id="promptInput" value="${e.replace(/"/g,'&quot;')}" placeholder="${n}"><div class="flex-between" style="margin-top:1rem;"><button id="promptConfirm">确认</button><button id="promptCancel" class="secondary">取消</button></div></div>`;document.body.appendChild(o);const i=o.querySelector('#promptInput');o.querySelector('#promptConfirm').onclick=()=>{const t=i.value;o.remove();s(t)};o.querySelector('#promptCancel').onclick=()=>{o.remove();s(null)};i.focus()})}
-            function customConfirm(t){return new Promise(e=>{const n=document.createElement('div');n.className='custom-modal';n.innerHTML=`<div class="custom-modal-content"><p>${t}</p><div class="flex-between"><button id="confirmYes">确定</button><button id="confirmNo" class="secondary">取消</button></div></div>`;document.body.appendChild(n);n.querySelector('#confirmYes').onclick=()=>{n.remove();e(true)};n.querySelector('#confirmNo').onclick=()=>{n.remove();e(false)}})}
-            function escapeHtml(t){return t?.replace(/[&<>]/g,function(t){if(t==='&')return'&amp;';if(t==='<')return'&lt;';if(t==='>')return'&gt;';return t})||''}
-            function insertImageModal(t){const e=document.createElement('div');e.className='custom-modal';e.innerHTML=`<div class="custom-modal-content"><h3><i class="fas fa-image"></i> 插入图片</h3><div><label>📁 本地上传</label><input type="file" id="localImageInput" accept="image/*"></div><div style="margin:12px 0;">或</div><div><label>🔗 图片网址</label><input type="text" id="urlImageInput" placeholder="https://..."></div><div id="previewContainer" style="margin-top:12px;"></div><div class="flex-between" style="margin-top:1rem;"><button id="confirmImageBtn">插入</button><button id="cancelImageBtn" class="secondary">取消</button></div></div>`;document.body.appendChild(e);const n=e.querySelector('#localImageInput'),s=e.querySelector('#urlImageInput'),o=e.querySelector('#previewContainer');let i=null;n.onchange=e=>{const t=e.target.files[0];if(t){const e=new FileReader;e.onload=e=>{i=e.target.result;o.innerHTML=`<img src="${i}" style="max-width:100%; max-height:150px;">`;s.value=''};e.readAsDataURL(t)}};s.oninput=()=>{i=s.value.trim();if(i)o.innerHTML=`<img src="${i}" style="max-width:100%; max-height:150px;">`;else o.innerHTML='';n.value=''};e.querySelector('#confirmImageBtn').onclick=()=>{if(i){t(i);e.remove()}else showMessage("请选择图片或输入网址",!0)};e.querySelector('#cancelImageBtn').onclick=()=>e.remove()}
-            document.addEventListener('click',function(t){const e=t.target.closest('img.previewable-img');if(e){t.stopPropagation();const n=e.getAttribute('src');if(n&&n.trim()!==''){const t=document.createElement('div');t.className='custom-modal';t.innerHTML=`<div class="custom-modal-content big-image-modal"><img src="${n}" style="max-width:100%; max-height:80vh;"><div class="flex-between" style="margin-top:1rem;"><button class="closeBigImgBtn" class="secondary">关闭</button></div></div>`;document.body.appendChild(t);t.querySelector('.closeBigImgBtn').onclick=()=>t.remove()}}});
+    // 全新原创语录（可爱风格，无任何IP关联）
+    const defaultQuotes = [
+        "🐙 扭一扭～ 今天也是元气满满的一天！",
+        "⭐ 海星说：你的微笑像珍珠一样亮～",
+        "🍬 悄悄告诉你，努力的人运气都不会差哦！",
+        "🌸 把烦恼丢进罐罐，让快乐住进心里～",
+        "🎵 哼着小曲，生活就像甜甜的棉花糖",
+        "🏆 完成任务的你超棒！奖励一朵小红花🌺",
+        "🐚 贝壳里藏着祝福，愿你事事顺心",
+        "💖 你值得世间所有的美好！",
+        "🌊 海浪会带走忧伤，留下闪闪发光的希望",
+        "🧸 抱抱自己，今天也是可爱的一天"
+    ];
+    const eatMessages = ["🍬 唔～ 美味的小鱼干！谢谢～", "🐙 吃饱饱，肚肚圆圆，好幸福～", "⭐ 你喂的食物有魔法！让我充满力量！", "🎉 吧唧吧唧～ 粉萌小章鱼开心转圈圈！"];
+    const petMessages = ["🥰 嘻嘻嘻，好痒呀～ 你真好！", "🐙 哈哈哈，挠挠触手太舒服啦！", "🎈 和你在一起最开心啦！", "💛 你的手好温暖，想一直这样～"];
+    const shopMessages = ["🎁 兑换成功！小章鱼为你鼓掌！", "🐙 谢谢你光顾贝壳商店！", "🍬 新宝贝到手啦～ 继续攒金币吧！", "💎 你真棒！又解锁一件宝物！"];
+    function getRandomMsg(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-            // ================== 账户与数据 ==================
-            function getDefaultOCData(){return{calendarUnit:"星历",worldTree:[{id:"w1",title:"艾泽拉斯大陆",content:"充满魔法与战争的土地。",images:[],children:[]}],factions:[{id:"f1",name:"光辉议会",description:"秩序守护者",size:"1200人",avatar:""}],timelineEvents:[{id:"ev1",year:1012,title:"混沌之战",description:"古神陨落",image:""}],storyline:[{id:"s1",title:"序幕·觉醒",description:"主角踏上旅途",order:1,image:""}],characters:[{id:"c1",name:"艾琳·星光",age:24,gender:"女",camp:"光辉议会",title:"大法师",slogan:"星光所向",background:"魔法天才",lifeHistory:"星陨之年",personality:"温柔",hobbies:"观星",avatarUrl:"https://api.dicebear.com/7.x/avataaars/svg?seed=Elara",role:"主角",relationToProtagonist:"本人",order:0,mainStory:{firstMeet:"迷雾森林",keyEvents:"混沌之战",currentStatus:"领袖"},relationships:[]},{id:"c2",name:"雷恩·铁刃",age:27,gender:"男",camp:"自由联盟",title:"佣兵团长",slogan:"刀锋意志",background:"流浪剑客",lifeHistory:"角斗士出身",personality:"豪爽",hobbies:"战斗",avatarUrl:"https://api.dicebear.com/7.x/avataaars/svg?seed=Ragnar",role:"配角",relationToProtagonist:"挚友",order:1,relationships:[]}],mainChapters:[{id:"ch1",title:"第一章·迷雾初现",content:"夜色笼罩着边境小镇..."}],ifChapters:[{id:"if1",title:"IF线·暗影主宰",content:"假如主角选择了黑暗之路..."}],drafts:[{id:"d1",title:"未命名草稿",content:""}],images:[]}}
-            function saveAccounts(){localStorage.setItem(STORAGE_ACCOUNTS,JSON.stringify(accounts))}
-            function initAccounts(){let t=localStorage.getItem(STORAGE_ACCOUNTS);t?accounts=JSON.parse(t):(accounts=[{id:"1",username:"creator",password:"123",secret:!1,ocData:getDefaultOCData()}],saveAccounts())}
-            
-            // ================== 终极强制刷新方案 ==================
-            function getActiveView(){
-                const activeTab = document.querySelector('.nav-item.active');
-                return activeTab ? activeTab.dataset.view : 'graph';
-            }
-            
-            function forceHardRefresh(){
-                console.log("强制执行硬刷新...");
-                const view = getActiveView();
-                
-                // 重新从localStorage加载最新数据
-                const savedData = localStorage.getItem(STORAGE_ACCOUNTS);
-                if(savedData){
-                    const allAccounts = JSON.parse(savedData);
-                    const currentAcc = allAccounts.find(acc => acc.id === currentAccount.id);
-                    if(currentAcc){
-                        currentOC = JSON.parse(JSON.stringify(currentAcc.ocData));
-                    }
+    function showSoftModal(title, message, onConfirm, onCancel, confirmText="确认", cancelText="取消") {
+        let modalDiv = document.createElement("div"); modalDiv.className = "modal-overlay"; modalDiv.style.display = "flex";
+        modalDiv.innerHTML = `<div class="modal-card"><h3>${escapeHtml(title)}</h3><p style="margin:1rem 0;">${escapeHtml(message)}</p><div class="flex-between"><button id="softConfirmBtn" class="btn-primary">${confirmText}</button><button id="softCancelBtn" class="btn-sm">${cancelText}</button></div></div>`;
+        document.body.appendChild(modalDiv);
+        let closeModal = () => modalDiv.remove();
+        document.getElementById("softConfirmBtn").onclick = () => { if(onConfirm) onConfirm(); closeModal(); };
+        document.getElementById("softCancelBtn").onclick = () => { if(onCancel) onCancel(); closeModal(); };
+    }
+    function showSoftPrompt(title, placeholder, onConfirm, onCancel) {
+        let modalDiv = document.createElement("div"); modalDiv.className = "modal-overlay"; modalDiv.style.display = "flex";
+        modalDiv.innerHTML = `<div class="modal-card"><h3>${escapeHtml(title)}</h3><textarea id="softPromptInput" rows="3" placeholder="${escapeHtml(placeholder)}" style="margin:1rem 0;"></textarea><div class="flex-between"><button id="softPromptConfirm" class="btn-primary">确认</button><button id="softPromptCancel" class="btn-sm">取消</button></div></div>`;
+        document.body.appendChild(modalDiv);
+        let closeModal = () => modalDiv.remove();
+        document.getElementById("softPromptConfirm").onclick = () => { let val = document.getElementById("softPromptInput").value; if(onConfirm) onConfirm(val); closeModal(); };
+        document.getElementById("softPromptCancel").onclick = () => { if(onCancel) onCancel(); closeModal(); };
+    }
+    function showPetMsg(msg) { let bub = document.getElementById("petBubble"); if(bub) { bub.innerText = msg; bub.style.opacity = "1"; setTimeout(() => bub.style.opacity = "0", 2500); } }
+
+    function loadData() {
+        let raw = localStorage.getItem("cuteOctopus_v1");
+        if (raw) {
+            try {
+                let parsed = JSON.parse(raw);
+                appData = parsed;
+                if (!appData.taskHistory) appData.taskHistory = [];
+                if (!appData.todoHistory) appData.todoHistory = [];
+                if (!appData.emotionJars) appData.emotionJars = [];
+                if (!appData.exchangeItems) appData.exchangeItems = [];
+                if (!appData.exchangeHistory) appData.exchangeHistory = [];
+                if (!appData.gold) appData.gold = 380;
+                if (!appData.books) appData.books = [];
+                appData.books.forEach(b => { if (!b.notes) b.notes = []; if (!b.password) b.password = ""; });
+                if (!appData.tasks) appData.tasks = [];
+                if (!appData.countdowns) appData.countdowns = [];
+                if (!appData.todos) appData.todos = [];
+                if (!appData.quotesList || appData.quotesList.length === 0) appData.quotesList = [...defaultQuotes];
+                if (appData.exchangeRate === undefined) appData.exchangeRate = 10;
+                appData.exchangeItems.forEach(item => { if (!item.type) item.type = "permanent"; });
+                appData.tasks.forEach(t => { if (!t.description) t.description = t.name || ""; if (!t.icon) t.icon = "📋"; });
+                appData.countdowns.forEach(cd => { if (cd.rewardGiven === undefined) cd.rewardGiven = false; });
+                appData.todos.forEach(t => { if (!t.icon) t.icon = "📌"; });
+            } catch(e) { console.error(e); initDefaultData(); }
+        } else { initDefaultData(); }
+        updatePetDecay(); saveAll();
+        updateExchangeRateDisplay();
+    }
+    function initDefaultData() {
+        appData.books = [{ id: "b1", title: "春日水母田", coverImage: "https://placehold.co/400x300/FFE1A0/C97E2A?text=🌼", coverBase64: "", password: "", notes: [] }];
+        appData.tasks = [{ id: "t1", name: "写一篇手账", description: "记录今天的心情", reward: 30, icon: "📝" }, { id: "t2", name: "喂小章鱼", description: "点击右下角小鱼按钮喂食", reward: 20, icon: "🐟" }];
+        appData.taskHistory = [];
+        appData.countdowns = [];
+        appData.todos = [{ id: "todo1", name: "买新手账本", icon: "📒" }, { id: "todo2", name: "画小章鱼插画", icon: "🎨" }];
+        appData.todoHistory = [];
+        appData.emotionJars = [];
+        appData.exchangeItems = [
+            { id: "e1", name: "🐙 小章鱼贴纸", price: 50, icon: "🐙", iconType: "emoji", type: "permanent" },
+            { id: "e2", name: "🍬 贝壳糖果", price: 100, icon: "🍬", iconType: "emoji", type: "permanent" },
+            { id: "e3", name: "⭐ 海星抱枕", price: 80, icon: "⭐", iconType: "emoji", type: "once" }
+        ];
+        appData.exchangeHistory = [];
+        appData.gold = 380;
+        appData.quotesList = [...defaultQuotes];
+        appData.exchangeRate = 10;
+    }
+    function saveAll() { localStorage.setItem("cuteOctopus_v1", JSON.stringify(appData)); updateGoldUI(); }
+    function updateGoldUI() { document.getElementById("goldAmount").innerText = appData.gold; }
+    function updateExchangeRateDisplay() { let rateSpan = document.getElementById("rateValue"); if (rateSpan) rateSpan.innerText = appData.exchangeRate; }
+    function editExchangeRate() {
+        showSoftPrompt("💱 修改汇率", `当前 1元 = ${appData.exchangeRate} 金币，输入新汇率`, (newRateStr) => {
+            let newRate = parseInt(newRateStr);
+            if (!isNaN(newRate) && newRate > 0) { appData.exchangeRate = newRate; saveAll(); updateExchangeRateDisplay(); showPetMsg(`✨ 汇率已更新：1元 = ${appData.exchangeRate} 金币`); }
+            else showSoftModal("提示", "请输入有效的正整数", null, null, "好的");
+        }, null);
+    }
+
+    function updatePetDecay() { let now=Date.now(); let diff=(now-(appData.pet.lastUpdate||now))/3600000; if(diff>0.3){ appData.pet.hunger=Math.max(0, appData.pet.hunger-Math.floor(diff*3)); appData.pet.lastUpdate=now; if(appData.pet.hunger<=15) showPetMsg("小章鱼饿了！快喂点小鱼干～"); saveAll(); } renderPetStats(); }
+    function renderPetStats() { document.getElementById("hungerVal").innerText=Math.floor(appData.pet.hunger); document.getElementById("loveVal").innerText=Math.floor(appData.pet.love); }
+    function feedPet() { appData.pet.hunger = Math.min(100, appData.pet.hunger+28); appData.pet.love = Math.min(100, appData.pet.love+5); showPetMsg(getRandomMsg(eatMessages)); saveAll(); renderPetStats(); }
+    function petPet() { appData.pet.love = Math.min(100, appData.pet.love+12); appData.pet.hunger = Math.max(0, appData.pet.hunger-2); showPetMsg(getRandomMsg(petMessages)); saveAll(); renderPetStats(); }
+    function randomQuote() { if (appData.quotesList.length === 0) { showSoftModal("🐙 语录提示", "还没有语录，双击我添加吧～", null, null, "知道啦"); return; } showPetMsg(appData.quotesList[Math.floor(Math.random() * appData.quotesList.length)]); }
+    function openQuoteManager() {
+        let modalDiv = document.createElement("div"); modalDiv.className = "modal-overlay"; modalDiv.style.display = "flex";
+        let quotesHtml = appData.quotesList.map((q, idx) => `<div class="quote-item" style="background:#FFF7E8; border-radius:40px; padding:8px; margin:8px 0; display:flex; justify-content:space-between;"><span>${escapeHtml(q)}</span><button class="btn-sm deleteQuoteBtn" data-idx="${idx}">🗑️</button></div>`).join('');
+        if (appData.quotesList.length === 0) quotesHtml = "<div style='text-align:center; padding:1rem;'>✨ 暂无语录，添加一些吧～</div>";
+        modalDiv.innerHTML = `<div class="modal-card"><h3><i class="fas fa-comment-dots"></i> 小章鱼语录管理</h3><div style="max-height: 300px; overflow-y: auto; margin: 1rem 0;">${quotesHtml}</div><div class="flex-between"><input type="text" id="newQuoteInput" placeholder="输入新语录" style="flex:3;"><button id="addQuoteBtn" class="btn-primary">➕ 添加</button></div><div class="flex-between" style="margin-top: 1rem;"><button id="closeQuoteModal" class="btn-sm">关闭</button></div></div>`;
+        document.body.appendChild(modalDiv);
+        let closeModal = () => modalDiv.remove();
+        document.getElementById("closeQuoteModal").onclick = closeModal;
+        document.getElementById("addQuoteBtn").onclick = () => {
+            let newQuote = document.getElementById("newQuoteInput").value.trim();
+            if (newQuote) { appData.quotesList.push(newQuote); saveAll(); closeModal(); openQuoteManager(); showPetMsg("✨ 新语录添加成功！"); }
+            else showSoftModal("提示", "请输入语录内容～", null, null, "好的");
+        };
+        document.querySelectorAll(".deleteQuoteBtn").forEach(btn => { btn.addEventListener("click", (e) => { let idx = parseInt(btn.dataset.idx); appData.quotesList.splice(idx, 1); saveAll(); closeModal(); openQuoteManager(); showPetMsg("🍂 语录已删除"); }); });
+    }
+
+    // 任务模块
+    function renderTasks() {
+        let grid = document.getElementById("tasksGrid"); if(!grid) return;
+        if(appData.tasks.length===0){ grid.innerHTML="<div>🍔 暂无任务</div>"; return; }
+        grid.innerHTML = appData.tasks.map(t => `<div class="mission-card" data-id="${t.id}"><div class="mission-icon">${t.icon||'📋'}</div><div class="mission-title">${escapeHtml(t.name)}</div><div class="mission-reward"><i class="fas fa-coins"></i> ${t.reward}</div></div>`).join('');
+        document.querySelectorAll('.mission-card').forEach(card => {
+            let id = card.dataset.id;
+            let clickTimer = null;
+            card.addEventListener('click', (e) => { if(clickTimer) clearTimeout(clickTimer); clickTimer = setTimeout(() => completeTask(id), 180); });
+            card.addEventListener('dblclick', (e) => { if(clickTimer) clearTimeout(clickTimer); e.stopPropagation(); deleteTaskWithReason(id); });
+        });
+    }
+    function completeTask(taskId){ let t=appData.tasks.find(x=>x.id===taskId); if(t){ appData.gold+=t.reward; appData.taskHistory.push({id:Date.now()+"",taskName:t.name,type:"完成",goldChange:t.reward,reason:"完成任务",timestamp:new Date().toLocaleString()}); appData.tasks=appData.tasks.filter(x=>x.id!==taskId); saveAll(); renderTasks(); updateGoldUI(); showPetMsg(`🎉 完成任务「${t.name}」，获得 ${t.reward} 金币！`); } }
+    function deleteTaskWithReason(taskId){ let t=appData.tasks.find(x=>x.id===taskId); if(!t)return; showSoftModal("🥺 删除任务",`删除「${t.name}」？写原因可减金币`,()=>{showSoftPrompt("✏️ 原因","100字以上免扣，50字以上扣5",(reason)=>{let len=(reason||"").length,penalty=10; if(len>100)penalty=0; else if(len>50)penalty=5; if(penalty>0){appData.gold=Math.max(0,appData.gold-penalty);showPetMsg(`扣除${penalty}金币`);}else showPetMsg(`无惩罚`); appData.taskHistory.push({id:Date.now()+"",taskName:t.name,type:"删除",goldChange:-penalty,reason:reason||"未写原因",timestamp:new Date().toLocaleString()}); appData.tasks=appData.tasks.filter(x=>x.id!==taskId); saveAll(); renderTasks(); updateGoldUI(); },null);},()=>{let penalty=10; appData.gold=Math.max(0,appData.gold-penalty); showPetMsg(`删除任务，扣除${penalty}金币`); appData.taskHistory.push({id:Date.now()+"",taskName:t.name,type:"删除",goldChange:-penalty,reason:"直接删除",timestamp:new Date().toLocaleString()}); appData.tasks=appData.tasks.filter(x=>x.id!==taskId); saveAll(); renderTasks(); updateGoldUI(); },"写原因","直接删");}
+    function newTask() { showSoftPrompt("🍔 新任务","任务标题",(name)=>{if(!name)return; showSoftPrompt("奖励金币","30",(rewardStr)=>{let reward=parseInt(rewardStr)||30; appData.tasks.push({id:Date.now()+"",name,description:name,reward,icon:"📋"}); saveAll(); renderTasks(); showPetMsg("✨ 新任务发布！"); },null); },null); }
+    function showTaskHistory() { let h=appData.taskHistory; let html=h.length===0?"<div>暂无历史</div>":h.map(x=>`<div class="history-item"><strong>${escapeHtml(x.taskName)}</strong> ${x.type} ${x.goldChange>=0?'+'+x.goldChange:x.goldChange}金币<br><small>${x.reason}</small><br><small>${x.timestamp}</small></div>`).join(''); let modal=document.createElement("div");modal.className="modal-overlay";modal.style.display="flex";modal.innerHTML=`<div class="modal-card"><h3>📜 任务历史</h3><div style="max-height:300px;overflow:auto;">${html}</div><button id="closeHist" class="btn-primary">关闭</button></div>`;document.body.appendChild(modal);document.getElementById("closeHist").onclick=()=>modal.remove(); }
+
+    // 倒计时
+    function renderCountdowns() {
+        countdownTimers.forEach(clearInterval); countdownTimers=[];
+        let grid=document.getElementById("countdownGrid"); if(!grid) return;
+        if(appData.countdowns.length===0){grid.innerHTML="<div>⏳ 暂无倒计时</div>";return;}
+        grid.innerHTML=appData.countdowns.map(cd=>`<div class="countdown-card" data-id="${cd.id}"><div class="mission-icon">📅</div><div class="mission-title">${escapeHtml(cd.name)}</div><div id="cd-time-${cd.id}">--:--:--</div><button class="btn-sm del-cd-btn" data-id="${cd.id}"><i class="fas fa-trash-alt"></i></button></div>`).join('');
+        appData.countdowns.forEach(cd=>startCountdownTimer(cd));
+        document.querySelectorAll('.del-cd-btn').forEach(btn=>btn.addEventListener('click',(e)=>{let id=btn.dataset.id; showSoftModal("🗑️ 删除倒计时","小章鱼有点伤心，确定要删除吗？",()=>{appData.countdowns=appData.countdowns.filter(c=>c.id!==id);saveAll();renderCountdowns();showPetMsg("😢 倒计时被删除了...");},null,"删除","再想想");}));
+    }
+    function startCountdownTimer(cd){
+        let timer=setInterval(()=>{
+            let now=new Date().getTime(),target=new Date(cd.endTime).getTime(),diff=target-now;
+            let timeElem=document.getElementById(`cd-time-${cd.id}`);
+            if(diff<=0){
+                if(timeElem)timeElem.innerText="🎉 时间到啦！";
+                if(!cd.rewardGiven){
+                    cd.rewardGiven=true; appData.gold+=5; saveAll(); updateGoldUI();
+                    showSoftModal("🎉 重要日子到了！",`✨ 终于到达了「${cd.name}」！奖励5金币～`,null,null,"谢谢小章鱼");
                 }
-                
-                // 强制重新渲染
-                if(view === 'graph') {
-                    if(network) network.destroy();
-                    renderGraph();
-                } else if(view === 'characters') {
-                    document.getElementById('characterListContainer').innerHTML = '';
-                    renderCharacters();
-                } else if(view === 'timeline') {
-                    document.getElementById('timelineVerticalContainer').innerHTML = '';
-                    renderTimelineAndStory();
-                } else if(view === 'world') {
-                    document.getElementById('worldTreeContainer').innerHTML = '';
-                    renderWorldEntries();
-                } else if(view === 'factions') {
-                    document.getElementById('factionsContainer').innerHTML = '';
-                    renderFactions();
-                } else if(view === 'drafts') {
-                    document.getElementById('draftsList').innerHTML = '';
-                    renderDrafts();
-                } else if(view === 'images') {
-                    document.getElementById('imagesList').innerHTML = '';
-                    renderImages();
-                } else if(view === 'mainstory') {
-                    document.getElementById('chapterList').innerHTML = '';
-                    renderMainChapters();
-                } else if(view === 'ifline') {
-                    document.getElementById('ifChapterList').innerHTML = '';
-                    renderIfChapters();
-                }
+                clearInterval(timer); return;
             }
-            
-            function saveCurrentOC(){
-                if(currentAccount){
-                    // 1. 立即保存到内存
-                    currentAccount.ocData = JSON.parse(JSON.stringify(currentOC));
-                    
-                    // 2. 立即保存到localStorage
-                    saveAccounts();
-                    
-                    // 3. 立即强制刷新UI（三重保险）
-                    forceHardRefresh();
-                    
-                    // 4. 延迟再次刷新，确保所有异步操作完成
-                    setTimeout(() => forceHardRefresh(), 50);
-                    setTimeout(() => forceHardRefresh(), 200);
-                    
-                    console.log("数据已保存并强制刷新");
-                }
-            }
-            
-            function setRandomGreeting(){document.getElementById('randomGreeting').innerText=greetingMessages[Math.floor(Math.random()*greetingMessages.length)]}
-            function setLoginTheme(t){document.body.classList.remove('theme-cream','theme-mint','theme-azure','theme-default');document.body.classList.add(`theme-${t}`);localStorage.setItem('login_theme',t);document.querySelectorAll('.theme-btn').forEach(e=>{e.classList.remove('active');if(e.dataset.theme===t)e.classList.add('active')})}
-            function loadLoginTheme(){const t=localStorage.getItem('login_theme')||'cream';setLoginTheme(t)}
-            document.querySelectorAll('.theme-btn').forEach(t=>t.addEventListener('click',()=>setLoginTheme(t.dataset.theme)));
-            async function changePassword(t){const e=await customPrompt("✝️ 修改密码忏悔录 ✝️\n请写下至少100字的忏悔理由","","忏悔内容...");if(!e)return;if(e.length<100){showMessage(`忏悔不足100字（当前${e.length}字）`,!0);return}const n=await customPrompt("新密码","");if(!n)return;t.password=n;saveAccounts();showMessage("密码修改成功，请重新登录");currentAccount&&currentAccount.id===t.id&&setTimeout(()=>logout(),1500)}
-            async function openAccountManager(){const t=document.createElement('div');t.className='custom-modal';t.innerHTML=`<div class="custom-modal-content" style="width:600px;"><h3>账号管理中心</h3><div id="accountListContainer"></div><div class="flex-between"><button id="newAccountBtnModal">新建账号</button><button id="closeAccountMgr" class="secondary">关闭</button></div></div>`;document.body.appendChild(t);const e=()=>{const n=t.querySelector('#accountListContainer');n.innerHTML=accounts.map(t=>`<div class="account-item"><div class="flex-between"><div><strong>${escapeHtml(t.username)}</strong> ${t.secret?'🔒涉密':''} ${currentAccount?.id===t.id?'当前':''}</div><div><button class="toggleSecret" data-id="${t.id}" style="background:#475569;">${t.secret?'解除涉密':'设为涉密'}</button><button class="changePwdBtn" data-id="${t.id}" style="background:#f59e0b;">修改密码</button><button class="delAcc" data-id="${t.id}" style="background:#b91c1c;">删除</button></div></div></div>`).join('');n.querySelectorAll('.toggleSecret').forEach(t=>t.addEventListener('click',()=>{let e=accounts.find(n=>n.id===t.dataset.id);if(e){e.secret=!e.secret;saveAccounts();e();currentAccount?.id===e.id&&(showMessage("涉密状态已变，请重新登录",!0),setTimeout(()=>logout(),1500))}}));n.querySelectorAll('.changePwdBtn').forEach(t=>t.addEventListener('click',async()=>{let n=accounts.find(e=>e.id===t.dataset.id);n&&await changePassword(n);e()}));n.querySelectorAll('.delAcc').forEach(n=>n.addEventListener('click',async()=>{let s=accounts.find(t=>t.id===n.dataset.id);if(!s)return;currentAccount?.id===s.id?showMessage("不能删除当前账号",!0):await customConfirm(`删除账号 ${s.username}?`)&&(accounts=accounts.filter(t=>t.id!==s.id),saveAccounts(),e(),currentAccount?.id===s.id&&logout())}))};e();t.querySelector('#newAccountBtnModal').addEventListener('click',async()=>{let n=await customPrompt("新账号名");if(!n)return;if(accounts.some(t=>t.username===n)){showMessage("已存在",!0);return}let s=await customPrompt("密码");if(s===null)return;accounts.push({id:Date.now().toString(),username:n,password:s,secret:!1,ocData:getDefaultOCData()});saveAccounts();e();showMessage("创建成功")});t.querySelector('#closeAccountMgr').addEventListener('click',()=>t.remove())}
+            let days=Math.floor(diff/86400000),hours=Math.floor((diff%86400000)/3600000),mins=Math.floor((diff%3600000)/60000),secs=Math.floor((diff%60000)/1000);
+            if(timeElem)timeElem.innerText=`${days}天 ${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        },1000);
+        countdownTimers.push(timer);
+    }
+    function newCountdown() {
+        let modalDiv = document.createElement("div"); modalDiv.className = "modal-overlay"; modalDiv.style.display = "flex";
+        modalDiv.innerHTML = `<div class="modal-card"><h3>⏳ 新建倒计时</h3><div><input id="cdName" placeholder="事件名称"><label>📅 选择日期：</label><input type="date" id="cdDate"></div><div class="flex-between" style="margin-top:1rem;"><button id="saveCdBtn" class="btn-primary">确认添加</button><button id="cancelCdBtn" class="btn-sm">取消</button></div></div>`;
+        document.body.appendChild(modalDiv);
+        let closeModal = () => modalDiv.remove();
+        document.getElementById("cancelCdBtn").onclick = closeModal;
+        document.getElementById("saveCdBtn").onclick = () => {
+            let name = document.getElementById("cdName").value.trim();
+            let dateStr = document.getElementById("cdDate").value;
+            if (!name || !dateStr) { showSoftModal("提示", "请填写完整", null, null, "好的"); return; }
+            appData.countdowns.push({id:Date.now()+"", name, startTime:new Date().toISOString(), endTime:new Date(dateStr).toISOString(), rewardGiven:false});
+            saveAll(); renderCountdowns(); closeModal(); showPetMsg("✨ 倒计时已添加！");
+        };
+    }
 
-            // ================== 角色管理 ==================
-            function addDirectedRelation(t,e,n){const s=currentOC.characters.find(r=>r.id===t);if(!s)return!1;s.relationships=s.relationships.filter(t=>!(t.targetId===e));s.relationships.push({targetId:e,type:n});saveCurrentOC();return!0}
-            function deleteDirectedRelation(t,e){const n=currentOC.characters.find(s=>s.id===t);if(n){n.relationships=n.relationships.filter(t=>!(t.targetId===e));saveCurrentOC();return!0}return!1}
-            function addRelationFromBuilder(t,e,n){const s=currentOC.characters.find(r=>r.name===t),o=currentOC.characters.find(r=>r.name===e);if(!s||!o){showMessage("角色不存在",!0);return}if(s.id===o.id){showMessage("不能与自己建立关系",!0);return}addDirectedRelation(s.id,o.id,n);showMessage(`已添加/更新 ${s.name} → ${o.name} : ${n}`);renderGraph();renderCharacters()}
-            function openCharacterForm(t=null){
-                let e=t?currentOC.characters.find(n=>n.id===t):null;
-                const n=!e;
-                n&&(e={id:Date.now().toString(),name:"",age:0,gender:"",camp:"",title:"",slogan:"",background:"",lifeHistory:"",personality:"",hobbies:"",avatarUrl:"",role:"配角",relationToProtagonist:"",order:currentOC.characters.length,mainStory:{firstMeet:"",keyEvents:"",currentStatus:""},relationships:[]});
-                const s=document.createElement('div');s.className='custom-modal';
-                s.innerHTML=`<div class="custom-modal-content" style="max-width:650px;"><h3>${n?'新建角色':'编辑角色'}</h3><div class="char-tabs"><div class="char-tab active" data-tab="basic">基础</div><div class="char-tab" data-tab="personality">性格爱好</div><div class="char-tab" data-tab="background">背景生平</div><div class="char-tab" data-tab="story">故事</div><div class="char-tab" data-tab="relations">关系</div></div><div id="tabBasic" class="tab-pane active"><div style="display:flex;gap:8px;align-items:center;"><img id="avatarPreview" src="${e.avatarUrl||'https://api.dicebear.com/7.x/avataaars/svg?seed=preview'}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;"><button id="uploadAvatarBtn" type="button">📷 插入图片</button></div><input type="hidden" id="charAvatarUrl" value="${e.avatarUrl||''}"><label>姓名</label><input id="charName" value="${escapeHtml(e.name)}"><div style="display:flex;gap:6px;"><input id="charAge" placeholder="年龄" value="${e.age}"><input id="charGender" placeholder="性别" value="${escapeHtml(e.gender)}"><input id="charCamp" placeholder="阵营" value="${escapeHtml(e.camp)}"><input id="charTitle" placeholder="头衔" value="${escapeHtml(e.title)}"></div><label>小说身份</label><select id="charRole"><option ${e.role==='主角'?'selected':''}>主角</option><option ${e.role==='配角'?'selected':''}>配角</option><option ${e.role==='路人'?'selected':''}>路人</option><option ${e.role==='反派'?'selected':''}>反派</option></select><label>Slogan</label><input id="charSlogan" value="${escapeHtml(e.slogan||'')}"></div><div id="tabPersonality" class="tab-pane"><label>性格特点</label><textarea id="charPersonality" rows="3">${escapeHtml(e.personality||'')}</textarea><label>兴趣爱好</label><textarea id="charHobbies" rows="3">${escapeHtml(e.hobbies||'')}</textarea></div><div id="tabBackground" class="tab-pane"><label>深度背景</label><textarea id="charBg" rows="3">${escapeHtml(e.background||'')}</textarea><label>历史生平</label><textarea id="charLifeHistory" rows="3">${escapeHtml(e.lifeHistory||'')}</textarea></div><div id="tabStory" class="tab-pane"><label>初次见面</label><input id="charFirstMeet" value="${escapeHtml(e.mainStory.firstMeet||'')}"><label>关键事件</label><input id="charKeyEvent" value="${escapeHtml(e.mainStory.keyEvents||'')}"><label>现状关系</label><input id="charStatus" value="${escapeHtml(e.mainStory.currentStatus||'')}"></div><div id="tabRelations" class="tab-pane"><div style="margin-bottom:12px;"><strong>与主角的关系（单向）</strong><input id="charRelationToProtagonist" value="${escapeHtml(e.relationToProtagonist||'')}" placeholder="例如：挚友、宿敌、本人..."></div><div><strong>其他有向关系（角色 → 其他角色）</strong> <button id="addRelationBtn" type="button" style="margin-left:8px;padding:2px 8px;">+ 添加关系</button></div><div id="otherRelationsList"></div></div><div style="margin-top:16px;display:flex;gap:12px;"><button id="saveCharModalBtn">保存</button><button id="closeCharModal" class="secondary">取消</button></div></div>`;
-                document.body.appendChild(s);
-                const o=s.querySelector('#avatarPreview'),i=s.querySelector('#charAvatarUrl');
-                s.querySelector('#uploadAvatarBtn').addEventListener('click',()=>{insertImageModal(t=>{i.value=t;o.src=t;showMessage("头像已更新，保存后生效")})});
-                const r=()=>{const t=s.querySelector('#otherRelationsList'),o=e.relationships||[];0===o.length?t.innerHTML='<div style="color:var(--text-muted);">暂无关系，点击上方添加</div>':t.innerHTML=o.map(t=>{const n=currentOC.characters.find(e=>e.id===t.targetId);return`<div class="relation-item"><span><strong>${escapeHtml(e.name)}</strong> → <strong>${n?escapeHtml(n.name):'未知'}</strong> : ${escapeHtml(t.type)}</span><button class="deleteRelationBtn" data-target="${t.targetId}" style="background:var(--danger);padding:2px 8px;">删除</button></div>`}).join('');t.querySelectorAll('.deleteRelationBtn').forEach(t=>t.addEventListener('click',()=>{deleteDirectedRelation(e.id,t.dataset.target);const n=currentOC.characters.find(t=>t.id===e.id);n&&Object.assign(e,n);r()}))};r();
-                s.querySelector('#addRelationBtn').addEventListener('click',async()=>{const t=currentOC.characters.filter(t=>t.id!==e.id);if(0===t.length){showMessage("没有其他角色",!0);return}const n=t.map(t=>`<option value="${t.id}">${escapeHtml(t.name)}</option>`).join(''),o=await customPrompt("关系类型","挚友");if(!o)return;const i=await new Promise(t=>{const e=document.createElement('div');e.className='custom-modal';e.innerHTML=`<div class="custom-modal-content"><h3>选择目标角色</h3><select id="targetSelect">${n}</select><div class="flex-between"><button id="selConfirm">确认</button><button id="selCancel" class="secondary">取消</button></div></div>`;document.body.appendChild(e);e.querySelector('#selConfirm').onclick=()=>{const n=e.querySelector('#targetSelect').value;e.remove();t(n)};e.querySelector('#selCancel').onclick=()=>{e.remove();t(null)}});i&&o&&(addDirectedRelation(e.id,i,o),Object.assign(e,currentOC.characters.find(t=>t.id===e.id)),r())});
-                s.querySelectorAll('.char-tab').forEach(t=>t.addEventListener('click',()=>{s.querySelectorAll('.char-tab').forEach(t=>t.classList.remove('active'));s.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));t.classList.add('active');s.querySelector(`#tab${t.dataset.tab.charAt(0).toUpperCase()+t.dataset.tab.slice(1)}`).classList.add('active')}));
-                s.querySelector('#closeCharModal').onclick=()=>s.remove();
-                s.querySelector('#saveCharModalBtn').onclick=()=>{const t={id:n?Date.now().toString():e.id,name:s.querySelector('#charName').value,age:parseInt(s.querySelector('#charAge').value)||0,gender:s.querySelector('#charGender').value,camp:s.querySelector('#charCamp').value,title:s.querySelector('#charTitle').value,slogan:s.querySelector('#charSlogan').value,background:s.querySelector('#charBg').value,lifeHistory:s.querySelector('#charLifeHistory').value,personality:s.querySelector('#charPersonality').value,hobbies:s.querySelector('#charHobbies').value,avatarUrl:i.value,role:s.querySelector('#charRole').value,relationToProtagonist:s.querySelector('#charRelationToProtagonist').value,order:e.order||currentOC.characters.length,mainStory:{firstMeet:s.querySelector('#charFirstMeet').value,keyEvents:s.querySelector('#charKeyEvent').value,currentStatus:s.querySelector('#charStatus').value},relationships:e.relationships};n?(currentOC.characters.push(t),showMessage(`角色 ${t.name} 已创建`)):(currentOC.characters[currentOC.characters.findIndex(t=>t.id===e.id)]=t,showMessage(`角色 ${t.name} 已更新`));saveCurrentOC();s.remove();}
-            }
-            function renderCharacters(){if(!currentOC)return;let t=currentCharFilter==="all"?currentOC.characters:currentOC.characters.filter(t=>t.role===currentCharFilter);const e=document.getElementById('characterListContainer');if(!e)return;e.innerHTML=t.map(t=>{const e=t.relationToProtagonist?` · ${t.relationToProtagonist}`:"主角"===t.role?" · 本人":"";return`<div class="character-card role-${"主角"===t.role?"protagonist":"反派"===t.role?"antagonist":"配角"===t.role?"supporter":"extra"}" data-id="${t.id}" draggable="${isSortingMode}" style="${isSortingMode?'cursor:grab;':''}">${isSortingMode?'<div class="sort-handle"><i class="fas fa-grip-vertical"></i></div>':''}${"主角"===t.role?'<div class="protagonist-badge"><i class="fas fa-star"></i> 主角</div>':''}<img class="character-avatar previewable-img" src="${t.avatarUrl||'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=err'"><div class="character-name">${escapeHtml(t.name)}</div><div class="character-info">${escapeHtml(t.role)} · ${escapeHtml(t.camp||'无阵营')} · ${escapeHtml(t.title||'无头衔')}${e}</div><div class="card-buttons"><button class="edit-char-btn small-btn" data-id="${t.id}">编辑</button><button class="delete-char-btn small-btn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div>`}).join('');document.querySelectorAll('.edit-char-btn').forEach(t=>t.addEventListener('click',t=>{t.stopPropagation();openCharacterForm(t.target.dataset.id)}));document.querySelectorAll('.delete-char-btn').forEach(t=>t.addEventListener('click',async t=>{t.stopPropagation();await customConfirm("删除角色？")&&(currentOC.characters=currentOC.characters.filter(e=>e.id!==t.target.dataset.id),saveCurrentOC(),renderCharacters(),renderGraph(),renderFactions(),showMessage("角色已删除"))}));const n=[...new Set(currentOC.characters.map(t=>t.role).filter(Boolean)),"all"],s=document.getElementById('categoryFilterBar');s&&(s.innerHTML=n.map(t=>`<div class="filter-chip ${currentCharFilter===t?'active':''}" data-cat="${t}">${"all"===t?"全部":t}</div>`).join(''));document.querySelectorAll('.filter-chip').forEach(t=>t.addEventListener('click',t=>{currentCharFilter=t.target.dataset.cat;renderCharacters()}));document.getElementById('characterList').innerHTML=currentOC.characters.map(t=>`<option value="${escapeHtml(t.name)}">`).join('')}
-            function enableSorting(){isSortingMode=!0;renderCharacters();showMessage("拖拽角色卡片调整顺序，再次点击排序模式退出");document.getElementById('sortCharactersBtn').textContent="✅ 退出排序"}
-            function disableSorting(){isSortingMode=!1;renderCharacters();document.getElementById('sortCharactersBtn').textContent="✏️ 排序模式"}
-            document.getElementById('sortCharactersBtn')?.addEventListener('click',()=>{isSortingMode?disableSorting():enableSorting()});
+    // 待办模块
+    function renderTodos() {
+        let grid = document.getElementById("todoGrid"); if(!grid) return;
+        if(appData.todos.length===0){ grid.innerHTML="<div>📋 暂无待办</div>"; return; }
+        grid.innerHTML = appData.todos.map(t => `<div class="todo-card" data-id="${t.id}"><div class="todo-icon">${t.icon||'📌'}</div><div class="todo-title">${escapeHtml(t.name)}</div><button class="todo-delete" data-id="${t.id}"><i class="fas fa-trash-alt"></i></button></div>`).join('');
+        attachTodoEvents();
+    }
+    function attachTodoEvents() {
+        document.querySelectorAll('.todo-card').forEach(card => {
+            let id = card.dataset.id;
+            card.addEventListener('click', (e) => { if(e.target.classList.contains('todo-delete')) return; let todo = appData.todos.find(t=>t.id===id); if(todo){ appData.gold += 1; updateGoldUI(); showPetMsg(`🎉 完成待办「${todo.name}」！+1金币`); appData.todoHistory.push({id:Date.now()+"_"+Math.random(), name:todo.name, icon:todo.icon, type:"完成", goldChange:1, timestamp:new Date().toLocaleString(), originalId:todo.id}); appData.todos = appData.todos.filter(t=>t.id!==id); saveAll(); renderTodos(); } });
+            card.addEventListener('dblclick', (e) => { e.stopPropagation(); let todo = appData.todos.find(t=>t.id===id); if(todo){ showSoftPrompt("✏️ 编辑待办","修改名称",(newName)=>{ if(newName) todo.name = newName; showSoftPrompt("🎨 修改图标","输入emoji",(newIcon)=>{ if(newIcon) todo.icon = newIcon; saveAll(); renderTodos(); showPetMsg("✨ 待办已更新"); },null); },null); } });
+            let delBtn = card.querySelector('.todo-delete');
+            if(delBtn) delBtn.addEventListener('click', (e) => { e.stopPropagation(); let todo = appData.todos.find(t=>t.id===id); if(todo){ showSoftModal("🗑️ 删除待办","确定删除这条待办吗？",()=>{ appData.todoHistory.push({id:Date.now()+"_"+Math.random(), name:todo.name, icon:todo.icon, type:"删除", goldChange:0, timestamp:new Date().toLocaleString(), originalId:todo.id}); appData.todos = appData.todos.filter(t=>t.id!==id); saveAll(); renderTodos(); showPetMsg("😢 待办已删除"); },null,"删除","再想想"); } });
+        });
+    }
+    function newTodo() { showSoftPrompt("📋 新建待办","待办事项",(name)=>{ if(name){ appData.todos.push({id:Date.now()+"", name, icon:"📌"}); saveAll(); renderTodos(); showPetMsg("✨ 新待办添加成功！"); } else showSoftModal("提示","请输入内容",null,null,"好的"); },null); }
+    function showTodoHistory() {
+        let history = appData.todoHistory;
+        let html = history.length===0?"<div>✨ 暂无历史</div>":history.map(h=>`<div class="history-item"><strong>${escapeHtml(h.name)}</strong> ${h.type} ${h.goldChange>=0?'+'+h.goldChange:h.goldChange}金币<br><small>${h.timestamp}</small>${h.type==='完成'?`<button class="btn-sm restore-todo-btn" data-id="${h.id}">🔄 恢复</button>`:''}</div>`).join('');
+        let modalDiv=document.createElement("div"); modalDiv.className="modal-overlay"; modalDiv.style.display="flex";
+        modalDiv.innerHTML=`<div class="modal-card"><h3>📜 待办历史</h3><div style="max-height:300px;overflow:auto;">${html}</div><button id="closeHist" class="btn-primary">关闭</button></div>`;
+        document.body.appendChild(modalDiv);
+        document.getElementById("closeHist").onclick=()=>modalDiv.remove();
+        document.querySelectorAll('.restore-todo-btn').forEach(btn=>btn.addEventListener('click',(e)=>{ let histId=btn.dataset.id; let entry=appData.todoHistory.find(h=>h.id===histId); if(entry && entry.type==='完成'){ showSoftModal("🔄 恢复待办",`恢复「${entry.name}」？扣除1金币`,()=>{ appData.gold=Math.max(0,appData.gold-1); updateGoldUI(); appData.todos.push({id:Date.now()+"_restore", name:entry.name, icon:entry.icon||"📌"}); appData.todoHistory=appData.todoHistory.filter(h=>h.id!==histId); saveAll(); renderTodos(); modalDiv.remove(); showPetMsg(`🔄 待办已恢复，扣除1金币`); },null,"确认恢复","再想想"); } }));
+    }
 
-            // ================== 关系图谱 ==================
-            function renderGraph(){if(!currentOC)return;const t=currentOC.characters.find(t=>"主角"===t.role),e=[],n=[];currentOC.characters.forEach(t=>{let s=t.avatarUrl?.trim()||"https://api.dicebear.com/7.x/avataaars/svg?seed=default";e.push({id:t.id,image:s,shape:'circularImage',size:"主角"===t.role?48:38,borderWidth:"主角"===t.role?3:1,color:{border:"主角"===t.role?'#fbbf24':"反派"===t.role?'#ef4444':'var(--primary-light)'},title:t.name})});const s=new Set;currentOC.characters.forEach(t=>{t.relationships&&t.relationships.forEach(e=>{if(currentOC.characters.some(t=>t.id===e.targetId)){const o=`${t.id}-${e.targetId}`;s.has(o)||(s.add(o),n.push({id:o,from:t.id,to:e.targetId,label:e.type,arrows:"to",color:'#facc15',font:{color:'#facc15',size:14,strokeWidth:1,strokeColor:'#0f172a'},width:3}))}})});const o=document.getElementById('network-container');if(!o||null===o.offsetParent)return;const i={nodes:new vis.DataSet(e),edges:new vis.DataSet(n)};t&&(i.nodes.update({id:t.id,x:0,y:0,fixed:!1}),(()=>{let e=(2*Math.PI)/(currentOC.characters.length-1),n=0;const s=280;currentOC.characters.forEach(o=>{if(o.id!==t.id){let t=e*n++;i.nodes.update({id:o.id,x:s*Math.cos(t),y:s*Math.sin(t),fixed:!1})}})})());network&&network.destroy();network=new vis.Network(o,i,{nodes:{shadow:!0},edges:{smooth:{type:'continuous',roundness:.5},width:2},physics:{stabilization:!0,barnesHut:{gravitationalConstant:-4e3,centralGravity:.2,springLength:250,springConstant:.04},solver:'barnesHut'},interaction:{hover:!0,tooltipDelay:100,dragNodes:!0}});network.on("click",function(t){if(t.nodes.length){let e=currentOC.characters.find(n=>n.id===t.nodes[0]);if(e){document.getElementById('cornerCharName').innerText=e.name;document.getElementById('cornerCharSlogan').innerText=e.slogan||"";document.getElementById('nodeInfoCorner').style.display="block";const t=document.getElementById('cornerJumpBtn'),n=t.cloneNode(!0);t.parentNode.replaceChild(n,t);n.addEventListener('click',()=>{openCharacterForm(e.id);document.getElementById('nodeInfoCorner').style.display="none"})}}else document.getElementById('nodeInfoCorner').style.display="none"});network.on("doubleClick",function(t){if(t.edges&&t.edges.length){const e=n.find(n=>n.id===t.edges[0]);if(e){const t=currentOC.characters.find(t=>t.id===e.from),n=currentOC.characters.find(t=>t.id===e.to);t&&n&&customPrompt(`编辑 ${t.name} → ${n.name} 的关系`,e.label).then(s=>{s&&s.trim()&&(addDirectedRelation(e.from,e.to,s),renderGraph())})}}});setTimeout(()=>network.fit(),100)}
+    // 情绪罐罐
+    function addWorryToJar() { let text=document.getElementById("newWorryText").value.trim(); if(!text){showSoftModal("提示","写点烦恼再丢进来吧",null,null,"好的");return;} appData.emotionJars.push({id:Date.now()+"_"+Math.random(),title:"💭 小烦恼",text:text,timestamp:new Date().toLocaleString(),status:"pending",response:null}); document.getElementById("newWorryText").value=""; saveAll(); showPetMsg("🍯 烦恼丢进罐罐啦！"); }
+    function randomDraw() { let pending=appData.emotionJars.filter(j=>j.status!=="resolved"); if(pending.length===0){showSoftModal("🍯 空罐罐","罐罐里没有待解决的纸条～",null,null,"知道啦");return;} let paper=pending[Math.floor(Math.random()*pending.length)]; drawSpecificPaperModal(paper); }
+    function drawSpecificPaperModal(paper) {
+        let modalDiv=document.createElement("div"); modalDiv.className="modal-overlay"; modalDiv.style.display="flex";
+        modalDiv.innerHTML=`<div class="modal-card"><h3>📜 抽到的纸条</h3><div style="background:#FFF1DE;border-radius:24px;padding:12px;margin:1rem 0;"><div><strong>${escapeHtml(paper.title)}</strong></div><div>${escapeHtml(paper.text)}</div><div><small>${paper.timestamp}</small></div></div><div class="flex-between"><button id="respondBtn" class="btn-primary">✨ 回应</button><button id="discardBtn" class="btn-sm">🗑️ 扔掉</button></div></div>`;
+        document.body.appendChild(modalDiv);
+        let close=()=>modalDiv.remove();
+        document.getElementById("respondBtn").onclick=()=>{ close(); showSoftPrompt("✍️ 回应","写下治愈的话",(resp)=>{ if(resp.trim()){ paper.status="resolved"; paper.response=resp.trim(); paper.resolvedTime=new Date().toLocaleString(); saveAll(); showPetMsg("🎉 治愈了一个心事！获得5金币"); appData.gold+=5; updateGoldUI(); } else showSoftModal("提示","回应不能为空",null,null,"好的"); },null); };
+        document.getElementById("discardBtn").onclick=()=>{ close(); showSoftModal("扔掉纸条","确定扔掉吗？它将消失～",()=>{ appData.emotionJars=appData.emotionJars.filter(p=>p.id!==paper.id); saveAll(); showPetMsg("🍂 纸条被风吹走了..."); },null,"扔掉","再想想"); };
+    }
+    function openEmotionBook(type) { currentEmotionBookType=type; let title=type==='pending'?'🔥 想发泄的':'✨ 已回应的'; document.getElementById("emotionBookTitle").innerText=title; let papers=appData.emotionJars.filter(j=>type==='pending'?j.status!=='resolved':j.status==='resolved'); let grid=document.getElementById("emotionPapersGrid"); if(papers.length===0){grid.innerHTML="<div>🍃 空空如也</div>";}else{grid.innerHTML=papers.map(p=>`<div class="jar-card"><div>📜 ${escapeHtml(p.title)}</div><div>${escapeHtml(p.text.substring(0,80))}</div><div><small>${p.timestamp}</small></div>${p.response?`<div>回应: ${escapeHtml(p.response)}</div>`:''}<div class="flex-between"><button class="btn-sm viewPaperBtn" data-id="${p.id}">查看</button><button class="btn-sm deletePaperBtn" data-id="${p.id}">删除</button>${type==='pending'?`<button class="btn-sm resolvePaperBtn" data-id="${p.id}">回应</button>`:''}</div></div>`).join(''); attachEmotionEvents();} document.getElementById("emotionJarPanel").style.display="none"; document.getElementById("emotionBookDetailPanel").style.display="block"; }
+    function attachEmotionEvents() { document.querySelectorAll('.viewPaperBtn').forEach(btn=>btn.addEventListener('click',(e)=>{let id=btn.dataset.id;let p=appData.emotionJars.find(x=>x.id===id);if(p)showSoftModal("纸条内容",`${p.text}\n\n${p.response?`回应：${p.response}`:''}`,null,null,"关闭");})); document.querySelectorAll('.deletePaperBtn').forEach(btn=>btn.addEventListener('click',(e)=>{let id=btn.dataset.id;showSoftModal("删除纸条","确定永久删除？",()=>{appData.emotionJars=appData.emotionJars.filter(x=>x.id!==id);saveAll();openEmotionBook(currentEmotionBookType);showPetMsg("🍂 纸条已删除");},null,"删除","再想想");})); document.querySelectorAll('.resolvePaperBtn').forEach(btn=>btn.addEventListener('click',(e)=>{let id=btn.dataset.id;let p=appData.emotionJars.find(x=>x.id===id);if(p)showSoftPrompt("✨ 回应","写下治愈的话",(resp)=>{if(resp.trim()){p.status="resolved";p.response=resp.trim();p.resolvedTime=new Date().toLocaleString();saveAll();openEmotionBook(currentEmotionBookType);showPetMsg("🎉 治愈完成！获得5金币");appData.gold+=5;updateGoldUI();}else showSoftModal("提示","回应不能为空",null,null,"好的");},null);}));}
+    function backToJar() { document.getElementById("emotionBookDetailPanel").style.display="none"; document.getElementById("emotionJarPanel").style.display="block"; }
 
-            // ================== 时间线与故事线 ==================
-            function renderTimelineAndStory(){if(!currentOC)return;document.getElementById('calendarUnitDisplay').innerText=currentOC.calendarUnit;let t=parseInt(document.getElementById('yearFrom')?.value)||-1/0,e=parseInt(document.getElementById('yearTo')?.value)||1/0;const n=currentOC.timelineEvents.filter(s=>s.year>=t&&s.year<=e),s=document.getElementById('timelineVerticalContainer');s&&(s.innerHTML=n.sort((t,e)=>t.year-e.year).map(t=>`<div class="timeline-item"><div class="timeline-year">${currentOC.calendarUnit} ${t.year}</div><div class="timeline-title">📜 ${escapeHtml(t.title)}</div><div class="timeline-desc">${escapeHtml(t.description)}</div>${t.image?`<img class="timeline-image previewable-img" src="${t.image}" onerror="this.style.display='none'">`:''}<div class="item-actions"><button class="editTimelineBtn small-btn" data-id="${t.id}">编辑</button><button class="previewTimelineBtn small-btn" data-id="${t.id}">🔍 预览</button><button class="delTimelineBtn small-btn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div>`).join(''));document.querySelectorAll('.editTimelineBtn').forEach(t=>t.addEventListener('click',()=>editTimelineEvent(t.dataset.id)));document.querySelectorAll('.previewTimelineBtn').forEach(t=>t.addEventListener('click',()=>{const e=currentOC.timelineEvents.sort((t,e)=>t.year-e.year),n=e.findIndex(e=>e.id===t.dataset.id);-1!==n&&openTimelinePreview(e,n)}));document.querySelectorAll('.delTimelineBtn').forEach(t=>t.addEventListener('click',async()=>{await customConfirm("删除事件")&&(currentOC.timelineEvents=currentOC.timelineEvents.filter(e=>e.id!==t.dataset.id),saveCurrentOC(),renderTimelineAndStory())}));const o=document.getElementById('storylineContainer'),i=currentOC.storyline||[];o&&(o.innerHTML=i.sort((t,e)=>t.order-e.order).map(t=>`<div class="storyline-item"><div class="timeline-title">📖 ${escapeHtml(t.title)}</div><div class="timeline-desc">${escapeHtml(t.description)}</div>${t.image?`<img class="storyline-image previewable-img" src="${t.image}" onerror="this.style.display='none'">`:''}<div class="item-actions"><button class="editStoryBtn small-btn" data-id="${t.id}">编辑</button><button class="previewStoryBtn small-btn" data-id="${t.id}">🔍 预览</button><button class="delStoryBtn small-btn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div>`).join(''));document.querySelectorAll('.editStoryBtn').forEach(t=>t.addEventListener('click',()=>editStoryBeat(t.dataset.id)));document.querySelectorAll('.previewStoryBtn').forEach(t=>t.addEventListener('click',()=>{const e=currentOC.storyline.sort((t,e)=>t.order-e.order),n=e.findIndex(e=>e.id===t.dataset.id);-1!==n&&openStorylinePreview(e,n)}));document.querySelectorAll('.delStoryBtn').forEach(t=>t.addEventListener('click',async()=>{await customConfirm("删除剧情节点")&&(currentOC.storyline=currentOC.storyline.filter(e=>e.id!==t.dataset.id),saveCurrentOC(),renderTimelineAndStory())}))}
-            function openTimelinePreview(t,e){openPreviewModal(t,e,'timeline')}
-            function openStorylinePreview(t,e){openPreviewModal(t,e,'storyline')}
+    // 兑换商店
+    function renderExchange() {
+        let grid = document.getElementById("exchangeGrid"); if(!grid) return;
+        if(appData.exchangeItems.length===0){ grid.innerHTML="<div>🎁 暂无物品</div>"; return; }
+        grid.innerHTML = appData.exchangeItems.map(item => {
+            let typeIcon = item.type === 'permanent' ? '♾️' : '✨';
+            return `<div class="shop-card" data-id="${item.id}">
+                        ${item.iconType==='image'?`<img src="${item.icon}" class="shop-icon-img">`:`<div class="mission-icon">${item.icon||'🎁'}</div>`}
+                        <div class="shop-title">${escapeHtml(item.name)}</div>
+                        <div class="shop-price-info">
+                            <span><i class="fas fa-coins"></i> ${item.price}</span>
+                            <span>${typeIcon}</span>
+                        </div>
+                        <button class="btn-sm exchange-buy-btn" data-id="${item.id}">✨ 兑换</button>
+                    </div>`;
+        }).join('');
+        document.querySelectorAll('.exchange-buy-btn').forEach(btn=>btn.addEventListener('click',(e)=>{ e.stopPropagation(); let id=btn.dataset.id; let item=appData.exchangeItems.find(i=>i.id===id); if(item && appData.gold>=item.price){ appData.gold-=item.price; appData.exchangeHistory.push({id:Date.now()+"",name:item.name,price:item.price,type:item.type,timestamp:new Date().toLocaleString(),goldCost:item.price}); if(item.type==='once') appData.exchangeItems=appData.exchangeItems.filter(i=>i.id!==id); saveAll(); renderExchange(); updateGoldUI(); showPetMsg(getRandomMsg(shopMessages)+` 获得 ${item.name}！`); } else if(item) showPetMsg("💰 金币不够啦！"); }));
+        document.querySelectorAll('.shop-card').forEach(card=>{ let id=card.dataset.id; let item=appData.exchangeItems.find(i=>i.id===id); if(item) card.addEventListener('dblclick',(e)=>{ e.stopPropagation(); showSoftPrompt("✏️ 编辑物品","修改名称",(newName)=>{ if(newName) { item.name=newName; saveAll(); renderExchange(); showPetMsg("✨ 物品已更新"); } },null); }); });
+    }
+    function showHistoryModal() { let history=appData.exchangeHistory; let html=history.length===0?"<div>暂无兑换记录</div>":history.map(h=>`<div class="history-item"><strong>${escapeHtml(h.name)}</strong> ${h.type} ${h.goldCost}金币<br><small>${h.timestamp}</small></div>`).join(''); let modal=document.createElement("div");modal.className="modal-overlay";modal.style.display="flex";modal.innerHTML=`<div class="modal-card"><h3>📜 兑换历史</h3><div style="max-height:300px;overflow:auto;">${html}</div><button id="closeHist" class="btn-primary">关闭</button></div>`;document.body.appendChild(modal);document.getElementById("closeHist").onclick=()=>modal.remove(); }
+    function openNewExchangeModal() {
+        let modalDiv = document.createElement("div"); modalDiv.className = "modal-overlay"; modalDiv.style.display = "flex";
+        modalDiv.innerHTML = `<div class="modal-card"><h3>🎁 新建兑换物品</h3><div><input id="itemName" placeholder="物品名称"><input id="itemPrice" type="number" placeholder="金币价格" value="50"><select id="itemType"><option value="permanent">♾️ 永久（可无限次兑换）</option><option value="once">✨ 一次性（兑换后消失）</option></select><div class="cute-upload" id="uploadIconBtn">📸 上传图片作为图标</div><input type="file" id="itemIconFile" accept="image/*" style="display:none;"><div id="iconPreview"></div><input id="itemEmoji" placeholder="或使用emoji (如 🐙)" value="🎁"></div><div class="flex-between" style="margin-top:1rem;"><button id="saveItemBtn" class="btn-primary">保存</button><button id="cancelItemBtn" class="btn-sm">取消</button></div></div>`;
+        document.body.appendChild(modalDiv);
+        let closeModal = () => modalDiv.remove();
+        document.getElementById("cancelItemBtn").onclick = closeModal;
+        document.getElementById("saveItemBtn").onclick = () => {
+            let name = document.getElementById("itemName").value.trim();
+            let price = parseInt(document.getElementById("itemPrice").value);
+            let type = document.getElementById("itemType").value;
+            let emoji = document.getElementById("itemEmoji").value.trim();
+            let file = document.getElementById("itemIconFile").files[0];
+            if (!name) { showSoftModal("提示", "请输入物品名称", null, null, "好的"); return; }
+            if (isNaN(price) || price <= 0) { showSoftModal("提示", "请输入有效价格", null, null, "好的"); return; }
+            if (file) { let reader = new FileReader(); reader.onload = e => { appData.exchangeItems.push({ id: Date.now()+"", name, price, icon: e.target.result, iconType: "image", type }); saveAll(); renderExchange(); closeModal(); showPetMsg(`✨ 新商品 ${name} 上架啦！`); }; reader.readAsDataURL(file); }
+            else { appData.exchangeItems.push({ id: Date.now()+"", name, price, icon: emoji || "🎁", iconType: "emoji", type }); saveAll(); renderExchange(); closeModal(); showPetMsg(`✨ 新商品 ${name} 上架啦！`); }
+        };
+        let uploadBtn = document.getElementById("uploadIconBtn");
+        let fileInput = document.getElementById("itemIconFile");
+        if(uploadBtn) uploadBtn.onclick = () => fileInput.click();
+        fileInput.onchange = e => { if(e.target.files[0]) { let url = URL.createObjectURL(e.target.files[0]); document.getElementById("iconPreview").innerHTML = `<img src="${url}" class="preview-img">`; } };
+    }
+    function resetAll() { showSoftModal("⚠️ 重置数据","重置所有数据？小章鱼会失忆！",()=>{ localStorage.removeItem("cuteOctopus_v1"); location.reload(); },null,"重置","取消"); }
 
-            // ================== 世界观 ==================
-            function renderWorldEntries(){const t=document.getElementById('worldTreeContainer');if(!t)return;t.innerHTML='';currentOC.worldTree&&currentOC.worldTree.length?renderWorldTree(t,currentOC.worldTree):t.innerHTML='<div style="text-align:center;padding:1rem;">暂无世界观条目，点击上方按钮添加根节点</div>'}
-            function renderWorldTree(t,e){if(!e||0===e.length)return;e.forEach(e=>{e.images||(e.images=[]);const n=document.createElement('div');n.className='world-item';n.innerHTML=`<div class="world-header"><div class="world-title"><i class="fas fa-folder-open"></i> <span class="world-title-text">${escapeHtml(e.title)}</span></div><div><button class="editWorldTitleBtn" data-id="${e.id}">✏️ 改标题</button><button class="addWorldChildBtn" data-id="${e.id}" style="background:var(--success);">➕ 添加子项</button><button class="previewWorldBtn" data-id="${e.id}">🔍 预览</button><button class="deleteWorldNodeBtn" data-id="${e.id}" style="background:var(--danger);">删除</button><i class="fas fa-chevron-down" style="margin-left:12px;cursor:pointer;"></i></div></div><div class="world-content"><textarea class="world-textarea" data-id="${e.id}" rows="6">${escapeHtml(e.content||'')}</textarea><div class="world-images" id="worldImages-${e.id}"></div><button class="insertWorldImgBtn" data-id="${e.id}">📷 插入图片</button><button class="saveWorldContentBtn" data-id="${e.id}">保存内容</button></div><div class="children-container" id="children-${e.id}"></div>`;t.appendChild(n);const s=n.querySelector('.world-content'),o=n.querySelector('.fa-chevron-down'),i=n.querySelector('.children-container');n.querySelector('.world-title-text');const r=()=>{"none"===i.style.display?(i.style.display='',s.classList.add('active'),o.classList.remove('fa-chevron-up')):(i.style.display='none',s.classList.remove('active'),o.classList.add('fa-chevron-up'))};o.addEventListener('click',r);n.querySelector('.editWorldTitleBtn').addEventListener('click',async()=>{const t=await customPrompt("修改标题",e.title);t&&(e.title=t,saveCurrentOC(),renderWorldEntries())});n.querySelector('.addWorldChildBtn').addEventListener('click',async()=>{const t=await customPrompt("子项名称","新节点");t&&(e.children||(e.children=[]),e.children.push({id:Date.now().toString(),title:t,content:"",images:[],children:[]}),saveCurrentOC(),renderWorldEntries())});n.querySelector('.previewWorldBtn').addEventListener('click',()=>{const t=flattenWorldNodes(currentOC.worldTree),n=t.findIndex(t=>t.id===e.id);-1!==n&&openPreviewModal(t,n,'world')});n.querySelector('.deleteWorldNodeBtn').addEventListener('click',async()=>{await customConfirm("删除此项及所有子项？")&&(function t(e,n){for(let s=0;s<e.length;s++)if(e[s].id===n)return e.splice(s,1),!0;else if(e[s].children&&t(e[s].children,n))return!0;return!1}(currentOC.worldTree,e.id),saveCurrentOC(),renderWorldEntries())});n.querySelector('.saveWorldContentBtn').addEventListener('click',()=>{e.content=n.querySelector('.world-textarea').value;saveCurrentOC()});const a=()=>{const t=n.querySelector(`#worldImages-${e.id}`);if(!t)return;t.innerHTML=e.images.map((t,e)=>`<div class="world-image-item"><img class="previewable-img" src="${t}"><div class="delete-world-img" data-idx="${e}">×</div></div>`).join('');t.querySelectorAll('.delete-world-img').forEach(t=>t.addEventListener('click',t=>{t.stopPropagation();e.images.splice(parseInt(t.target.dataset.idx),1);saveCurrentOC();a()}))};n.querySelector('.insertWorldImgBtn').addEventListener('click',()=>{insertImageModal(t=>{e.images.push(t);saveCurrentOC();a()})});a();e.children&&e.children.length?renderWorldTree(i,e.children):i.style.display='none'})}
-            function flattenWorldNodes(t,e=[]){return t.forEach(t=>{e.push(t);t.children&&flattenWorldNodes(t.children,e)}),e}
+    // 书籍模块
+    function renderShelf() {
+        let grid = document.getElementById("bookshelfGrid"); if(!grid) return;
+        if(!appData.books.length){ grid.innerHTML="<div>📭 空空的书架</div>"; return; }
+        grid.innerHTML = appData.books.map(book => `<div class="book-card" data-id="${book.id}">${book.password?`<i class="fas fa-lock lock-badge"></i>`:''}<div class="book-cover" style="background-image: url('${book.coverBase64||book.coverImage||'https://placehold.co/400x300/FDEBD0/A47551?text=📖'}');"></div><div class="book-title">${escapeHtml(book.title)}</div></div>`).join('');
+        attachBookEvents();
+    }
+    function attachBookEvents() {
+        document.querySelectorAll('.book-card').forEach(card=>{
+            let id = card.dataset.id;
+            let clickTimer = null;
+            card.addEventListener('click', (e)=>{ if(clickTimer) clearTimeout(clickTimer); clickTimer = setTimeout(()=>{ openBookWithPassword(id); },180); });
+            card.addEventListener('dblclick', (e)=>{ if(clickTimer) clearTimeout(clickTimer); e.stopPropagation(); let book=appData.books.find(b=>b.id===id); if(book) editBookById(id); });
+        });
+    }
+    function openBookWithPassword(bookId) { let book=appData.books.find(b=>b.id===bookId); if(book && book.password && book.password!==""){ showSoftPrompt("🔐 密码锁","请输入密码",(pwd)=>{ if(pwd===book.password) enterBook(bookId); else showSoftModal("错误","密码错误",null,null,"好的"); },null); return; } enterBook(bookId); }
+    function enterBook(bookId) { currentBookId=bookId; document.getElementById("shelfPanel").style.display="none"; document.getElementById("notesPanel").style.display="block"; document.getElementById("currentBookName").innerHTML=appData.books.find(b=>b.id===bookId).title; renderNotes(); }
+    function renderNotes() {
+        let book = appData.books.find(b=>b.id===currentBookId); if(!book) return;
+        let notes = [...book.notes]; if(noteSortOrder==="desc") notes.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp)); else notes.sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
+        let container = document.getElementById("notesContainer"); if(notes.length===0){ container.innerHTML="<div>✨ 还没有笔记，点“新笔记”吧</div>"; return; }
+        container.innerHTML = notes.map(n=>`<div class="note-card">
+            <div class="note-title">📌 ${escapeHtml(n.title||"无题")}</div>
+            <div class="note-content">${escapeHtml(n.text.substring(0,100))}${n.text.length>100?'…':''}</div>
+            <div class="flex-between" style="margin-top:8px;">
+                <button class="btn-sm editNoteBtn" data-id="${n.id}">✏️ 编辑</button>
+                <button class="btn-sm delNoteBtn" data-id="${n.id}">🗑️ 删除</button>
+                <button class="btn-sm previewNoteBtn" data-id="${n.id}">📖 翻书预览</button>
+            </div>
+        </div>`).join('');
+        document.querySelectorAll('.editNoteBtn').forEach(btn=>btn.addEventListener('click',()=>{ let nid=btn.dataset.id; let note=book.notes.find(n=>n.id===nid); openNoteEditor(note,book); }));
+        document.querySelectorAll('.delNoteBtn').forEach(btn=>btn.addEventListener('click',()=>{ showSoftModal("删除笔记","确定要删除吗？",()=>{ book.notes=book.notes.filter(n=>n.id!==btn.dataset.id); saveAll(); renderNotes(); showPetMsg("😢 笔记被删除了..."); },null,"删除","再想想"); }));
+        document.querySelectorAll('.previewNoteBtn').forEach(btn=>btn.addEventListener('click',()=>{ let nid=btn.dataset.id; let idx=book.notes.findIndex(n=>n.id===nid); if(idx>=0) openFlipbook(book.notes, idx); }));
+    }
+    function openFlipbook(notes, startIdx) {
+        currentPreviewNotes = notes; currentPreviewIndex = startIdx;
+        let modalDiv = document.createElement("div"); modalDiv.className = "modal-overlay"; modalDiv.style.display = "flex";
+        modalDiv.innerHTML = `<div class="modal-card" style="max-width:600px;"><h3><i class="fas fa-book-open"></i> 翻书预览</h3><div class="flip-scroll-area"><div id="flipContent"></div></div><div class="flex-between" style="margin-top:1rem;"><button id="prevFlipBtn" class="btn-primary"><i class="fas fa-chevron-left"></i> 上一页</button><span id="flipCounter"></span><button id="nextFlipBtn" class="btn-primary">下一页 <i class="fas fa-chevron-right"></i></button></div><div class="flex-between" style="margin-top:0.5rem;"><button id="closeFlipBtn" class="btn-sm">关闭</button></div></div>`;
+        document.body.appendChild(modalDiv);
+        renderFlipPage();
+        document.getElementById("closeFlipBtn").onclick = () => modalDiv.remove();
+        document.getElementById("prevFlipBtn").onclick = () => { if (currentPreviewIndex > 0) { currentPreviewIndex--; renderFlipPage(); } else showPetMsg("✨ 已经是第一篇啦～"); };
+        document.getElementById("nextFlipBtn").onclick = () => { if (currentPreviewIndex + 1 < currentPreviewNotes.length) { currentPreviewIndex++; renderFlipPage(); } else showPetMsg("📖 最后一页啦～"); };
+    }
+    function renderFlipPage() {
+        let note = currentPreviewNotes[currentPreviewIndex]; if (!note) return;
+        let timeStr = note.timestamp ? new Date(note.timestamp).toLocaleString() : "未知时间";
+        let imageHtml = note.image && note.imageMode === 'inline' ? `<div><img src="${note.image}" style="max-width:100%; border-radius:20px;"></div>` : (note.image && note.imageMode === 'full' ? `<div style="background-image:url('${note.image}'); background-size:cover; min-height:150px; border-radius:20px;"></div>` : '');
+        let content = `<div>${escapeHtml(timeStr)}</div><h3>${escapeHtml(note.title||"无题")}</h3><div>${escapeHtml(note.text).replace(/\n/g,'<br>')}</div>${imageHtml}${note.link ? `<div><a href="${escapeHtml(note.link)}" target="_blank">🔗 链接</a></div>` : ''}`;
+        document.getElementById("flipContent").innerHTML = content;
+        document.getElementById("flipCounter").innerText = `${currentPreviewIndex+1} / ${currentPreviewNotes.length}`;
+        document.querySelector(".flip-scroll-area").scrollTop = 0;
+    }
+    function openNoteEditor(note,book) {
+        let isNew=!note; let target=note||{id:Date.now()+"",title:"",text:"",image:"",imageMode:"inline",timestamp:new Date().toISOString().slice(0,16),link:""};
+        let modalHtml=`<input id="noteTitle" placeholder="标题" value="${escapeHtml(target.title)}"><textarea id="noteText" rows="3" placeholder="内容">${escapeHtml(target.text)}</textarea><div><label><input type="radio" name="imgMode" value="inline" ${target.imageMode==='inline'?'checked':''}>内嵌图</label><label><input type="radio" name="imgMode" value="full" ${target.imageMode==='full'?'checked':''}>全幅图</label></div><div class="cute-upload" id="cuteUploadBtn">📸 上传图片</div><input type="file" id="noteImageFile" accept="image/*" style="display:none;"><div id="imgPrev"></div><input type="datetime-local" id="noteTime" value="${target.timestamp}"><input id="noteLink" placeholder="链接" value="${escapeHtml(target.link||'')}">`;
+        let modalDiv=document.createElement("div"); modalDiv.className="modal-overlay"; modalDiv.style.display="flex";
+        modalDiv.innerHTML=`<div class="modal-card"><h3>${isNew?"✨新建笔记":"📝编辑笔记"}</h3><div>${modalHtml}</div><div class="flex-between" style="margin-top:1rem;"><button id="modalSaveBtn" class="btn-primary">保存</button><button id="modalCancelBtn" class="btn-sm">取消</button></div></div>`;
+        document.body.appendChild(modalDiv);
+        let closeModal=()=>modalDiv.remove();
+        document.getElementById("modalCancelBtn").onclick=closeModal;
+        document.getElementById("modalSaveBtn").onclick=()=>{
+            let title=document.getElementById("noteTitle").value;
+            let text=document.getElementById("noteText").value;
+            let mode=document.querySelector('input[name="imgMode"]:checked').value;
+            let time=document.getElementById("noteTime").value;
+            let link=document.getElementById("noteLink").value;
+            let file=document.getElementById("noteImageFile").files[0];
+            let saveFn=(base64)=>{ if(isNew) book.notes.push({id:Date.now()+"",title:title||"无题",text,image:base64||"",imageMode:mode,timestamp:time,link}); else { target.title=title; target.text=text; target.imageMode=mode; target.timestamp=time; target.link=link; if(base64!==undefined) target.image=base64; } saveAll(); renderNotes(); closeModal(); showPetMsg("📝 笔记已保存！"); };
+            if(file){ let fr=new FileReader(); fr.onload=e=>saveFn(e.target.result); fr.readAsDataURL(file); } else saveFn(undefined);
+        };
+        let uploadBtn=document.getElementById("cuteUploadBtn");
+        let fileInput=document.getElementById("noteImageFile");
+        if(uploadBtn) uploadBtn.onclick=()=>fileInput.click();
+        fileInput.onchange=e=>{ if(e.target.files[0]) document.getElementById("imgPrev").innerHTML=`<img src="${URL.createObjectURL(e.target.files[0])}" class="preview-img">`; };
+    }
+    function editBookById(bookId) {
+        let book=appData.books.find(b=>b.id===bookId);
+        if(!book) return;
+        let modalDiv=document.createElement("div"); modalDiv.className="modal-overlay"; modalDiv.style.display="flex";
+        modalDiv.innerHTML=`<div class="modal-card"><h3>📘 编辑书籍</h3><div><input id="editBookTitle" placeholder="书名" value="${escapeHtml(book.title)}"><div class="cute-upload" id="coverUpBtn">🍬 更换封面</div><input type="file" id="bookCoverFile" accept="image/*" style="display:none;"><div id="coverPrev"></div><input id="editCoverUrl" placeholder="图片网址" value="${escapeHtml(book.coverImage||'')}"><input id="editPassword" placeholder="密码锁(留空无锁)" value="${escapeHtml(book.password||'')}"></div><div class="flex-between" style="margin-top:1rem;"><button id="modalSaveBtn" class="btn-primary">保存</button><button id="modalCancelBtn" class="btn-sm">取消</button><button id="deleteBookBtn" class="btn-sm" style="background:#FFB08C;">🗑️ 删除这本书</button></div></div>`;
+        document.body.appendChild(modalDiv);
+        let closeModal=()=>modalDiv.remove();
+        document.getElementById("modalCancelBtn").onclick=closeModal;
+        document.getElementById("modalSaveBtn").onclick=()=>{
+            book.title=document.getElementById("editBookTitle").value;
+            book.password=document.getElementById("editPassword").value;
+            let file=document.getElementById("bookCoverFile").files[0];
+            let url=document.getElementById("editCoverUrl").value;
+            if(file){ let fr=new FileReader(); fr.onload=e=>{ book.coverBase64=e.target.result; book.coverImage=""; saveAll(); renderShelf(); closeModal(); }; fr.readAsDataURL(file); }
+            else { book.coverBase64=""; book.coverImage=url||"https://placehold.co/400x300/FCE6CF/A47551?text=📖"; saveAll(); renderShelf(); closeModal(); }
+        };
+        document.getElementById("deleteBookBtn").onclick=()=>{ showSoftModal("🗑️ 删除书籍","确定永久删除？",()=>{ appData.books=appData.books.filter(b=>b.id!==bookId); if(currentBookId===bookId) backToShelf(); saveAll(); renderShelf(); closeModal(); showPetMsg("📚 书籍已删除..."); },null,"删除","再想想"); };
+        let up=document.getElementById("coverUpBtn");
+        let inp=document.getElementById("bookCoverFile");
+        if(up) up.onclick=()=>inp.click();
+        inp.onchange=e=>{ if(e.target.files[0]) document.getElementById("coverPrev").innerHTML=`<img src="${URL.createObjectURL(e.target.files[0])}" class="preview-img">`; };
+    }
+    function newBook() { showSoftPrompt("📘 新建书籍","请输入书名",(title)=>{ if(title){ let newBook={id:Date.now()+"",title,coverImage:"https://placehold.co/400x300/FCE6CF/A47551?text=📘",coverBase64:"",password:"",notes:[]}; appData.books.push(newBook); saveAll(); renderShelf(); showPetMsg("✨ 新书籍已上架！"); } else showSoftModal("提示","请输入书名",null,null,"好的"); },null); }
+    function backToShelf() { currentBookId=null; document.getElementById("shelfPanel").style.display="block"; document.getElementById("notesPanel").style.display="none"; renderShelf(); }
 
-            // ================== 阵营 ==================
-            function renderFactions(){if(!currentOC)return;const t=document.getElementById('factionsContainer');if(!t)return;const e=currentOC.factions||[];t.innerHTML=e.map(t=>`<div class="faction-card"><img class="faction-avatar previewable-img" src="${t.avatar||'https://api.dicebear.com/7.x/identicon/svg?seed=default'}" onerror="this.src='https://api.dicebear.com/7.x/identicon/svg?seed=default'"><div class="faction-info"><div class="flex-between"><h3>${escapeHtml(t.name)}</h3><div><button class="editFactionBtn" data-id="${t.id}">编辑</button><button class="previewFactionBtn" data-id="${t.id}">🔍 预览</button><button class="delFactionBtn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div><p>${escapeHtml(t.description)}</p><p><strong>规模：</strong> ${escapeHtml(t.size||'未设置')}</p><p><strong>成员 (${getMembersByCamp(t.name).length})：</strong></p><div id="members-${t.id}" class="member-list"></div><div class="flex-between" style="margin-top:12px;"><span>➕ 添加成员：</span><input type="text" id="addMemberInput-${t.id}" placeholder="输入角色名" style="width:120px;"><button class="addMemberBtn" data-faction="${t.id}">加入</button></div></div></div>`).join('');e.forEach(t=>{const n=document.getElementById(`members-${t.id}`);if(n){const s=getMembersByCamp(t.name);n.innerHTML=s.map(e=>`<div class="member-tag">${escapeHtml(e.name)} <button class="removeMemberBtn" data-charid="${e.id}" data-factionname="${escapeHtml(t.name)}" style="background:none;color:#f87171;cursor:pointer;"><i class="fas fa-times-circle"></i></button></div>`).join('');0===s.length&&(n.innerHTML='<span>暂无成员</span>')}});document.querySelectorAll('.editFactionBtn').forEach(t=>t.addEventListener('click',()=>editFaction(t.dataset.id)));document.querySelectorAll('.previewFactionBtn').forEach(t=>t.addEventListener('click',()=>{const n=e.findIndex(e=>e.id===t.dataset.id);-1!==n&&openPreviewModal(e,n,'faction')}));document.querySelectorAll('.delFactionBtn').forEach(t=>t.addEventListener('click',async()=>{await customConfirm("删除阵营？")&&(currentOC.factions=currentOC.factions.filter(e=>e.id!==t.dataset.id),saveCurrentOC(),renderFactions())}));document.querySelectorAll('.addMemberBtn').forEach(t=>t.addEventListener('click',()=>{const e=t.dataset.faction,n=currentOC.factions.find(t=>t.id===e);if(!n)return;const s=document.getElementById(`addMemberInput-${e}`).value.trim();if(!s)return showMessage("请输入角色名",!0);const o=currentOC.characters.find(t=>t.name===s);if(!o)return showMessage(`角色“${s}”不存在`,!0);o.camp===n.name?showMessage(`${o.name} 已在此阵营`,!0):(o.camp=n.name,saveCurrentOC(),renderFactions(),renderCharacters(),showMessage(`${o.name} 已加入 ${n.name}`))}));document.querySelectorAll('.removeMemberBtn').forEach(t=>t.addEventListener('click',()=>{const e=t.dataset.charid,n=currentOC.characters.find(t=>t.id===e);n&&(n.camp="",saveCurrentOC(),renderFactions(),renderCharacters())}))}
-            function getMembersByCamp(t){return currentOC.characters.filter(e=>e.camp===t)}
+    function switchSection(section) {
+        document.querySelectorAll('.main-panel').forEach(p=>p.style.display='none');
+        if(section==='emotionJar'){ document.getElementById("emotionJarPanel").style.display="block"; document.getElementById("emotionBookDetailPanel").style.display="none"; }
+        else if(section==='exchange'){ document.getElementById("exchangePanel").style.display="block"; renderExchange(); }
+        else if(section==='shelf'){ document.getElementById("shelfPanel").style.display="block"; renderShelf(); }
+        else{ let panelId=`${section}Panel`; let panel=document.getElementById(panelId); if(panel) panel.style.display='block'; if(section==='tasks') renderTasks(); if(section==='countdown') renderCountdowns(); if(section==='todo') renderTodos(); }
+        document.querySelectorAll('.nav-item').forEach(item=>item.classList.remove('active'));
+        document.querySelector(`.nav-item[data-section="${section}"]`).classList.add('active');
+    }
+    function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
-            // ================== 草稿箱 ==================
-            function renderDrafts(){const t=document.getElementById('draftsList');if(!t)return;const e=currentOC.drafts||[];t.innerHTML=e.map(t=>`<div class="draft-item"><div><strong>${escapeHtml(t.title)}</strong><br><span style="font-size:0.7rem;">${escapeHtml(t.content.substring(0,50))}...</span></div><div><button class="editDraftBtn" data-id="${t.id}">编辑</button><button class="previewDraftBtn" data-id="${t.id}">🔍 预览</button><button class="deleteDraftBtn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div>`).join('');document.querySelectorAll('.editDraftBtn').forEach(t=>t.addEventListener('click',()=>editDraft(t.dataset.id)));document.querySelectorAll('.previewDraftBtn').forEach(t=>t.addEventListener('click',()=>{const n=(currentOC.drafts||[]).findIndex(e=>e.id===t.dataset.id);-1!==n&&openPreviewModal(currentOC.drafts,n,'draft')}));document.querySelectorAll('.deleteDraftBtn').forEach(t=>t.addEventListener('click',async()=>{await customConfirm("删除草稿？")&&(currentOC.drafts=currentOC.drafts.filter(e=>e.id!==t.dataset.id),saveCurrentOC(),renderDrafts())}))}
-            async function editDraft(t){let e=currentOC.drafts.find(n=>n.id===t);if(!e)return;const n=await customPrompt("草稿标题",e.title);if(null===n)return;const s=await customPrompt("草稿内容",e.content,"输入内容...");null!==s&&(e.title=n,e.content=s,saveCurrentOC(),showMessage("草稿已保存"))}
-            async function newDraft(){const t=await customPrompt("草稿标题","新草稿");t&&(currentOC.drafts.push({id:Date.now().toString(),title:t,content:""}),saveCurrentOC(),showMessage("草稿已创建"))}
-            document.getElementById('newDraftBtn')?.addEventListener('click',newDraft);
-
-            // ================== 图片库 ==================
-            function renderImages(){const t=document.getElementById('imagesList');if(!t)return;const e=currentOC.images||[];t.innerHTML=e.map(t=>`<div class="image-card" data-id="${t.id}"><img src="${t.data}" style="width:100%;height:100px;object-fit:cover;border-radius:0.5rem;" class="previewable-img"><div class="flex-between" style="margin-top:4px;"><span class="img-name" style="font-size:0.7rem;cursor:pointer;" title="双击修改名称">${escapeHtml(t.name||'图片')}</span><button class="deleteImageBtn" data-id="${t.id}" style="background:var(--danger);padding:2px 6px;">🗑️</button></div></div>`).join('');t.querySelectorAll('.image-card').forEach(t=>{t.addEventListener('click',n=>{if(n.target.closest('button'))return;const s=e.findIndex(e=>e.id===t.dataset.id);-1!==s&&openPreviewModal(e,s,'image')})});document.querySelectorAll('.deleteImageBtn').forEach(t=>t.addEventListener('click',async t=>{t.stopPropagation();await customConfirm("删除图片？")&&(currentOC.images=currentOC.images.filter(e=>e.id!==t.target.dataset.id),saveCurrentOC(),renderImages())}));document.querySelectorAll('.img-name').forEach(t=>t.addEventListener('dblclick',async t=>{const e=t.target.closest('.image-card').dataset.id,n=currentOC.images.find(t=>t.id===e);if(n){const t=await customPrompt("修改图片名称",n.name);t&&(n.name=t,saveCurrentOC(),renderImages())}}))}
-            function uploadImage(){insertImageModal(t=>{currentOC.images.push({id:Date.now().toString(),data:t,name:`图片_${Date.now()}`});saveCurrentOC();renderImages();showMessage("图片已添加")})}
-            document.getElementById('uploadImageBtn')?.addEventListener('click',uploadImage);
-
-            // ================== 预览模态框 ==================
-            function openPreviewModal(t,e,n){if(!t.length)return;const s=document.createElement('div');s.className='custom-modal';let o='';if('timeline'===n){const i=t[e];o=`<h3>📜 ${escapeHtml(i.title)}</h3><p><strong>${currentOC.calendarUnit} ${i.year}</strong></p><p>${escapeHtml(i.description)}</p>${i.image?`<img src="${i.image}" style="max-width:100%;max-height:300px;border-radius:0.5rem;">`:''}`}else if('storyline'===n){const i=t[e];o=`<h3>📖 ${escapeHtml(i.title)}</h3><p>${escapeHtml(i.description)}</p>${i.image?`<img src="${i.image}" style="max-width:100%;max-height:300px;border-radius:0.5rem;">`:''}`}else if('world'===n){const i=t[e];o=`<h3>🌍 ${escapeHtml(i.title)}</h3><div>${escapeHtml(i.content||'无内容')}</div>${i.images?.length?i.images.map(t=>`<img src="${t}" style="max-width:100px;margin:4px;border-radius:0.5rem;">`).join(''):''}`}else if('faction'===n){const i=t[e],r=getMembersByCamp(i.name);o=`<h3>${escapeHtml(i.name)}</h3><p>${escapeHtml(i.description)}</p><p><strong>规模：</strong> ${escapeHtml(i.size||'未设置')}</p><p><strong>成员：</strong> ${r.map(t=>escapeHtml(t.name)).join('、')||'无'}</p>${i.avatar?`<img src="${i.avatar}" style="max-width:100px;border-radius:0.5rem;">`:''}`}else if('draft'===n){const i=t[e];o=`<h3>📝 ${escapeHtml(i.title)}</h3><div style="white-space:pre-wrap;">${escapeHtml(i.content)}</div>`}else if('image'===n){const i=t[e];o=`<h3>${escapeHtml(i.name||'图片')}</h3><img src="${i.data}" style="max-width:100%;max-height:70vh;border-radius:0.5rem;">`}s.innerHTML=`<div class="custom-modal-content" style="max-width:600px;">${o}<div class="reader-nav"><button id="prevItemBtn" ${0===e?'disabled':''}>◀ 上一页</button><span>${e+1}/${t.length}</span><button id="nextItemBtn" ${e===t.length-1?'disabled':''}>下一页 ▶</button><button id="closePreviewBtn" class="secondary">关闭</button></div></div>`;document.body.appendChild(s);s.querySelector('#prevItemBtn').onclick=()=>{s.remove();openPreviewModal(t,e-1,n)};s.querySelector('#nextItemBtn').onclick=()=>{s.remove();openPreviewModal(t,e+1,n)};s.querySelector('#closePreviewBtn').onclick=()=>s.remove()}
-
-            // ================== 时间线编辑 ==================
-            function editTimelineEvent(t=null){let e=t?currentOC.timelineEvents.find(n=>n.id===t):null;const n=!e;n&&(e={id:Date.now().toString(),year:1e3,title:"",description:"",image:""});const s=document.createElement('div');s.className='custom-modal';s.innerHTML=`<div class="custom-modal-content"><h3>${n?'新增大事记':'编辑大事记'}</h3><label>年份</label><input id="evYear" value="${e.year}" type="number"><label>标题</label><input id="evTitle" value="${escapeHtml(e.title)}"><label>描述</label><textarea id="evDesc">${escapeHtml(e.description)}</textarea><div><label>图片</label><div><button id="insertTimelineImageBtn" type="button">📷 插入图片</button><span id="imagePreview"></span></div><input type="hidden" id="evImage" value="${e.image||''}"></div><div><button id="saveEvBtn">保存</button><button id="closeEvBtn" class="secondary">取消</button></div></div>`;document.body.appendChild(s);const o=s.querySelector('#imagePreview'),i=s.querySelector('#evImage');e.image&&(o.innerHTML=`<img src="${e.image}" style="max-height:60px;border-radius:4px;">`);s.querySelector('#insertTimelineImageBtn').addEventListener('click',()=>{insertImageModal(t=>{i.value=t;o.innerHTML=`<img src="${t}" style="max-height:60px;">`})});s.querySelector('#closeEvBtn').onclick=()=>s.remove();s.querySelector('#saveEvBtn').onclick=()=>{e.year=parseInt(s.querySelector('#evYear').value);e.title=s.querySelector('#evTitle').value;e.description=s.querySelector('#evDesc').value;e.image=i.value;n&&currentOC.timelineEvents.push(e);saveCurrentOC();s.remove();showMessage("大事记已保存")}}
-
-            // ================== 故事线编辑 ==================
-            function editStoryBeat(t=null){let e=t?currentOC.storyline.find(n=>n.id===t):null;const n=!e;n&&(e={id:Date.now().toString(),title:"",description:"",order:currentOC.storyline.length+1,image:""});const s=document.createElement('div');s.className='custom-modal';s.innerHTML=`<div class="custom-modal-content"><h3>${n?'添加剧情节点':'编辑节点'}</h3><label>标题</label><input id="beatTitle" value="${escapeHtml(e.title)}"><label>描述</label><textarea id="beatDesc">${escapeHtml(e.description)}</textarea><div><label>图片</label><div><button id="insertStoryImageBtn" type="button">📷 插入图片</button><span id="imagePreview"></span></div><input type="hidden" id="beatImage" value="${e.image||''}"></div><div><button id="saveBeatBtn">保存</button><button id="closeBeatBtn" class="secondary">取消</button></div></div>`;document.body.appendChild(s);const o=s.querySelector('#imagePreview'),i=s.querySelector('#beatImage');e.image&&(o.innerHTML=`<img src="${e.image}" style="max-height:60px;border-radius:4px;">`);s.querySelector('#insertStoryImageBtn').addEventListener('click',()=>{insertImageModal(t=>{i.value=t;o.innerHTML=`<img src="${t}" style="max-height:60px;">`})});s.querySelector('#closeBeatBtn').onclick=()=>s.remove();s.querySelector('#saveBeatBtn').onclick=()=>{e.title=s.querySelector('#beatTitle').value;e.description=s.querySelector('#beatDesc').value;e.image=i.value;n&&currentOC.storyline.push(e);saveCurrentOC();s.remove();showMessage("剧情节点已保存")}}
-
-            // ================== 阵营编辑 ==================
-            function editFaction(t=null){let e=t?currentOC.factions.find(n=>n.id===t):null;const n=!e;n&&(e={id:Date.now().toString(),name:"",description:"",size:"",avatar:""});const s=document.createElement('div');s.className='custom-modal';s.innerHTML=`<div class="custom-modal-content"><h3>${n?'新建阵营':'编辑阵营'}</h3><label>名称</label><input id="facName" value="${escapeHtml(e.name)}"><label>描述</label><textarea id="facDesc">${escapeHtml(e.description)}</textarea><label>规模</label><input id="facSize" value="${escapeHtml(e.size)}"><div><label>头像</label><div><button id="insertFactionAvatarBtn">📷 插入图片</button><span id="avatarPreview"></span></div><input type="hidden" id="facAvatar" value="${escapeHtml(e.avatar)}"></div><div><button id="saveFacBtn">保存</button><button id="closeFacBtn" class="secondary">取消</button></div></div>`;document.body.appendChild(s);const o=s.querySelector('#avatarPreview'),i=s.querySelector('#facAvatar');e.avatar&&(o.innerHTML=`<img src="${e.avatar}" style="max-height:60px;border-radius:4px;">`);s.querySelector('#insertFactionAvatarBtn').addEventListener('click',()=>{insertImageModal(t=>{i.value=t;o.innerHTML=`<img src="${t}" style="max-height:60px;">`})});s.querySelector('#closeFacBtn').onclick=()=>s.remove();s.querySelector('#saveFacBtn').onclick=()=>{e.name=s.querySelector('#facName').value;e.description=s.querySelector('#facDesc').value;e.size=s.querySelector('#facSize').value;e.avatar=i.value;n&&currentOC.factions.push(e);saveCurrentOC();s.remove();showMessage("阵营已保存")}}
-
-            // ================== 正文与IF线 ==================
-            let currentChapterSearch="",currentIfSearch="";
-            function renderMainChapters(){let t=currentOC.mainChapters||[];currentChapterSearch&&(t=t.filter(t=>t.title.toLowerCase().includes(currentChapterSearch.toLowerCase())));const e=document.getElementById('chapterList');e&&(e.innerHTML=t.map(t=>`<div class="chapter-item" data-id="${t.id}"><span>📘 ${escapeHtml(t.title)}</span><div><button class="editChapterBtn" data-id="${t.id}">编辑</button><button class="previewChapterBtn" data-id="${t.id}" style="background:var(--primary-light);">📖 阅读</button><button class="deleteChapterBtn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div>`).join(''));document.querySelectorAll('.editChapterBtn').forEach(t=>t.addEventListener('click',()=>{const e=currentOC.mainChapters.find(n=>n.id===t.dataset.id);e&&openChapterEditor(e)}));document.querySelectorAll('.previewChapterBtn').forEach(t=>t.addEventListener('click',()=>{const e=currentOC.mainChapters.find(n=>n.id===t.dataset.id);e&&openReader(e.id,'main')}));document.querySelectorAll('.deleteChapterBtn').forEach(t=>t.addEventListener('click',async()=>{await customConfirm("删除章节？")&&(currentOC.mainChapters=currentOC.mainChapters.filter(e=>e.id!==t.dataset.id),saveCurrentOC(),renderMainChapters())}));const n=document.getElementById('chapterCount');n&&(n.innerText=`共 ${t.length} 章`)}
-            function openChapterEditor(t){const e=document.createElement('div');e.className='custom-modal';e.innerHTML=`<div class="custom-modal-content"><h3>编辑章节：${escapeHtml(t.title)}</h3><textarea id="chapterEditContent" style="min-height:400px;">${escapeHtml(t.content)}</textarea><div class="flex-between"><button id="saveChapterEditBtn">保存</button><button id="closeChapterEditBtn" class="secondary">取消</button></div></div>`;document.body.appendChild(e);e.querySelector('#saveChapterEditBtn').onclick=()=>{t.content=e.querySelector('#chapterEditContent').value;saveCurrentOC();e.remove();showMessage("章节已保存")};e.querySelector('#closeChapterEditBtn').onclick=()=>e.remove()}
-            function openReader(t,e){let n="main"===e?currentOC.mainChapters||[]:currentOC.ifChapters||[];const s=[...n].sort((t,e)=>t.title.localeCompare(e.title)),o=s.findIndex(n=>n.id===t);if(-1===o)return;const i=s[o],r=o>0?s[o-1]:null,a=o<s.length-1?s[o+1]:null,l=document.createElement('div');l.className='custom-modal';l.innerHTML=`<div class="custom-modal-content reader-modal" style="max-width:800px;"><div class="reader-title">${escapeHtml(i.title)}</div><div class="reader-content">${escapeHtml(i.content).replace(/\n/g,'<br>')}</div><div class="reader-nav"><button id="readerPrevBtn" ${r?'':'disabled'}>◀ 上一章</button><button id="readerCloseBtn" class="secondary">关闭</button><button id="readerNextBtn" ${a?'':'disabled'}>下一章 ▶</button></div></div>`;document.body.appendChild(l);r&&(l.querySelector('#readerPrevBtn').onclick=()=>{l.remove();openReader(r.id,e)});a&&(l.querySelector('#readerNextBtn').onclick=()=>{l.remove();openReader(a.id,e)});l.querySelector('#readerCloseBtn').onclick=()=>l.remove()}
-           function renderIfChapters(){let t=currentOC.ifChapters||[];currentIfSearch&&(t=t.filter(t=>t.title.toLowerCase().includes(currentIfSearch.toLowerCase())));const e=document.getElementById('ifChapterList');e&&(e.innerHTML=t.map(t=>`<div class="chapter-item" data-id="${t.id}"><span>🌿 ${escapeHtml(t.title)}</span><div><button class="editIfBtn" data-id="${t.id}">编辑</button><button class="previewIfBtn" data-id="${t.id}" style="background:var(--primary-light);">📖 阅读</button><button class="deleteIfBtn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div>`).join(''));document.querySelectorAll('.editIfBtn').forEach(t=>t.addEventListener('click',()=>{const e=currentOC.ifChapters.find(n=>n.id===t.dataset.id);e&&openIfEditor(e)}));document.querySelectorAll('.previewIfBtn').forEach(t=>t.addEventListener('click',()=>{const e=currentOC.ifChapters.find(n=>n.id===t.dataset.id);e&&openReader(e.id,'if')}));document.querySelectorAll('.deleteIfBtn').forEach(t=>t.addEventListener('click',async()=>{await customConfirm("删除IF线？")&&(currentOC.ifChapters=currentOC.ifChapters.filter(e=>e.id!==t.dataset.id),saveCurrentOC(),renderIfChapters())}));const n=document.getElementById('ifCount');n&&(n.innerText=`共 ${t.length} 条`)}
-            function openIfEditor(t){const e=document.createElement('div');e.className='custom-modal';e.innerHTML=`<div class="custom-modal-content"><h3>编辑IF线：${escapeHtml(t.title)}</h3><textarea id="ifEditContent" style="min-height:400px;">${escapeHtml(t.content)}</textarea><div class="flex-between"><button id="saveIfEditBtn">保存</button><button id="closeIfEditBtn" class="secondary">取消</button></div></div>`;document.body.appendChild(e);e.querySelector('#saveIfEditBtn').onclick=()=>{t.content=e.querySelector('#ifEditContent').value;saveCurrentOC();e.remove();showMessage("IF线已保存")};e.querySelector('#closeIfEditBtn').onclick=()=>e.remove()}
-            document.getElementById('newChapterBtn')?.addEventListener('click',async()=>{const t=await customPrompt("章节标题");t&&(currentOC.mainChapters.push({id:Date.now().toString(),title:t,content:""}),saveCurrentOC(),showMessage("章节已创建"))});
-            document.getElementById('newIfChapterBtn')?.addEventListener('click',async()=>{const t=await customPrompt("IF线标题");t&&(currentOC.ifChapters.push({id:Date.now().toString(),title:t,content:""}),saveCurrentOC(),showMessage("IF线已创建"))});
-            document.getElementById('previewChapterBtn')?.addEventListener('click',()=>{currentOC.mainChapters.length?openReader(currentOC.mainChapters[0].id,'main'):showMessage("暂无章节",!0)});
-            document.getElementById('searchChapterBtn')?.addEventListener('click',()=>{currentChapterSearch=document.getElementById('chapterSearch').value;renderMainChapters()});
-            document.getElementById('searchIfBtn')?.addEventListener('click',()=>{currentIfSearch=document.getElementById('ifSearch').value;renderIfChapters()});
-
-            // ================== 导航与初始化 ==================
-            async function login(t,e){let n=accounts.find(s=>s.username===t);if(n&&n.password===e)return currentAccount=n,currentOC=JSON.parse(JSON.stringify(n.ocData)),currentOC.drafts||(currentOC.drafts=[]),currentOC.images||(currentOC.images=[]),document.getElementById('loginPanel').style.display='none',document.getElementById('appMain').style.display='flex',document.getElementById('loginThemeSelector').style.display='none',document.getElementById('currentUserSpan').innerHTML=`${escapeHtml(t)}${n.secret?' (涉密)':''}`,document.getElementById('secretAlert').innerHTML=n.secret?'<div style="background:var(--danger);padding:4px;border-radius:8px;">涉密账号</div>':'',switchView('graph'),showMessage(`欢迎回来，${t}`),!0;showMessage("账号或密码错误",!0)}
-            function logout(){currentAccount=null;currentOC=null;document.getElementById('appMain').style.display='none';document.getElementById('loginPanel').style.display='flex';document.getElementById('loginThemeSelector').style.display='flex';setRandomGreeting();network&&network.destroy()}
-            function switchView(t){
-                document.querySelectorAll('.view-pane').forEach(t=>t.style.display='none');
-                "graph"===t&&(document.getElementById('graphView').style.display='block',renderGraph());
-                "characters"===t&&(document.getElementById('charactersView').style.display='block',renderCharacters());
-                "timeline"===t&&(document.getElementById('timelineView').style.display='block',renderTimelineAndStory());
-                "world"===t&&(document.getElementById('worldView').style.display='block',renderWorldEntries());
-                "factions"===t&&(document.getElementById('factionsView').style.display='block',renderFactions());
-                "drafts"===t&&(document.getElementById('draftsView').style.display='block',renderDrafts());
-                "images"===t&&(document.getElementById('imagesView').style.display='block',renderImages());
-                "mainstory"===t&&(document.getElementById('mainstoryView').style.display='block',renderMainChapters());
-                "ifline"===t&&(document.getElementById('iflineView').style.display='block',renderIfChapters());
-            }
-
-            document.getElementById('doLoginBtn').onclick=()=>login(document.getElementById('loginUsername').value,document.getElementById('loginPassword').value);
-            document.getElementById('openAccountManageBtn').onclick=openAccountManager;
-            document.getElementById('logoutBtn').onclick=logout;
-            document.querySelectorAll('.nav-item').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.nav-item').forEach(t=>t.classList.remove('active'));t.classList.add('active');switchView(t.dataset.view)}));
-            document.getElementById('newCharacterBtn')?.addEventListener('click',()=>openCharacterForm(null));
-            document.getElementById('addRelationBtnGraph')?.addEventListener('click',()=>{const t=document.getElementById('relSource').value.trim(),e=document.getElementById('relTarget').value.trim(),n=document.getElementById('relType').value.trim();t&&e&&n?addRelationFromBuilder(t,e,n):showMessage("请填写完整",!0)});
-            document.getElementById('addFactionBtn')?.addEventListener('click',()=>editFaction(null));
-            document.getElementById('addTimelineEventBtn')?.addEventListener('click',()=>editTimelineEvent(null));
-            document.getElementById('addStoryBeatBtn')?.addEventListener('click',()=>editStoryBeat(null));
-            document.getElementById('applyYearRangeBtn')?.addEventListener('click',()=>renderTimelineAndStory());
-            document.getElementById('calendarUnitDisplay')?.addEventListener('dblclick',async()=>{const t=await customPrompt("纪元名称",currentOC.calendarUnit);t&&(currentOC.calendarUnit=t,saveCurrentOC(),renderTimelineAndStory())});
-            document.querySelectorAll('.story-tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.story-tab').forEach(t=>t.classList.remove('active'));t.classList.add('active');"timeline"===t.dataset.tab?(document.getElementById('timelinePanel').style.display='block',document.getElementById('storylinePanel').style.display='none'):(document.getElementById('timelinePanel').style.display='none',document.getElementById('storylinePanel').style.display='block')}));
-            document.getElementById('addWorldRootBtn')?.addEventListener('click',async()=>{const t=await customPrompt("根节点名称","世界观");t&&(currentOC.worldTree||(currentOC.worldTree=[]),currentOC.worldTree.push({id:Date.now().toString(),title:t,content:"",images:[],children:[]}),saveCurrentOC(),renderWorldEntries())});
-
-            initAccounts();setRandomGreeting();loadLoginTheme();
-        })();
-    </script>
+    document.addEventListener("DOMContentLoaded",()=>{
+        loadData(); renderShelf(); renderTasks(); renderCountdowns(); renderTodos(); renderExchange(); updateGoldUI(); renderPetStats();
+        setInterval(()=>{ updatePetDecay(); renderPetStats(); },60000);
+        document.getElementById("petAvatar").addEventListener("click", randomQuote);
+        document.getElementById("petAvatar").addEventListener("dblclick", openQuoteManager);
+        document.getElementById("newBookBtn").onclick=newBook;
+        document.getElementById("backToShelfBtn").onclick=backToShelf;
+        document.getElementById("addNoteBtn").onclick=()=>{ let book=appData.books.find(b=>b.id===currentBookId); if(book) openNoteEditor(null,book); };
+        document.getElementById("sortAscBtn").onclick=()=>{ noteSortOrder="asc"; renderNotes(); };
+        document.getElementById("sortDescBtn").onclick=()=>{ noteSortOrder="desc"; renderNotes(); };
+        document.getElementById("newTaskBtn").onclick=newTask;
+        document.getElementById("viewTaskHistoryBtn").onclick=showTaskHistory;
+        document.getElementById("newCountdownBtn").onclick=newCountdown;
+        document.getElementById("newTodoBtn").onclick=newTodo;
+        document.getElementById("viewTodoHistoryBtn").onclick=showTodoHistory;
+        document.getElementById("resetAllDataBtn").onclick=resetAll;
+        document.getElementById("newExchangeItemBtn").onclick=openNewExchangeModal;
+        document.getElementById("viewHistoryBtn").onclick=showHistoryModal;
+        document.getElementById("feedBtn").onclick=feedPet;
+        document.getElementById("petBtn").onclick=petPet;
+        document.getElementById("randomDrawBtn").onclick=randomDraw;
+        document.getElementById("addToJarBtn").onclick=addWorryToJar;
+        document.querySelectorAll(".viewPapersBtn").forEach(btn=> btn.addEventListener("click", (e) => { let type = btn.closest(".emotion-split-card").dataset.type; openEmotionBook(type); }));
+        document.getElementById("backToJarBtn").onclick = backToJar;
+        let rateElem = document.getElementById("exchangeRateDisplay");
+        if (rateElem) rateElem.addEventListener("dblclick", editExchangeRate);
+        document.querySelectorAll(".nav-item").forEach(item=>{ item.addEventListener("click",()=>{ switchSection(item.dataset.section); }); });
+        switchSection("shelf");
+    });
+</script>
 </body>
 </html>
