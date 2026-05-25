@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>OC叙事工坊 - 强制刷新版</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Georgia:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="text/javascript" src="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg-start:#0f172a; --bg-end:#1e293b; --sidebar-bg:rgba(15,23,42,0.85);
+            --card-bg:#1e293b; --card-border:#334155; --primary:#8b5cf6; --primary-hover:#7c3aed;
+            --primary-light:#c084fc; --text-main:#f1f5f9; --text-muted:#cbd5e1; --input-bg:#0f172a;
+            --danger:#ef4444; --success:#10b981; --node-border:#c084fc; --timeline-line:#8b5cf6;
+            --timeline-item-bg:#0f172a; --toast-bg:#1e293b; --reader-bg:#fef9e6; --reader-text:#3b2e24;
+            --reader-card:#fffaf0;
+        }
+        body.theme-cream {
+            --bg-start:#fef9e6; --bg-end:#f5e9d3; --sidebar-bg:rgba(245,233,211,0.92);
+            --card-bg:#fffaf0; --card-border:#e2d5b6; --primary:#b87333; --primary-hover:#a05a2c;
+            --primary-light:#d6a56e; --text-main:#4a3b28; --text-muted:#6b5a44; --input-bg:#ffffff;
+            --danger:#c23b22; --success:#5f8b4c; --node-border:#b87333; --timeline-line:#b87333;
+            --timeline-item-bg:#fff5e6; --toast-bg:#fffaf0; --reader-bg:#fef9e6; --reader-text:#4a3b28;
+            --reader-card:#ffffff;
+        }
+        body.theme-mint {
+            --bg-start:#e8f5e9; --bg-end:#c8e6d9; --sidebar-bg:rgba(200,230,217,0.92);
+            --card-bg:#f1f8e9; --card-border:#b9d8b3; --primary:#558b2f; --primary-hover:#33691e;
+            --primary-light:#8bc34a; --text-main:#2e5c2e; --text-muted:#4c6a4c; --input-bg:#ffffff;
+            --danger:#c62828; --success:#2e7d32; --node-border:#558b2f; --timeline-line:#558b2f;
+            --timeline-item-bg:#f1f8e9; --toast-bg:#f1f8e9; --reader-bg:#f4f9f0; --reader-text:#2e5c2e;
+            --reader-card:#ffffff;
+        }
+        body.theme-azure {
+            --bg-start:#e3f2fd; --bg-end:#bbdef5; --sidebar-bg:rgba(187,222,245,0.92);
+            --card-bg:#f0f8ff; --card-border:#b3d4f0; --primary:#2c7da0; --primary-hover:#1f5e7e;
+            --primary-light:#6ab0de; --text-main:#1e4a6e; --text-muted:#3a6b8f; --input-bg:#ffffff;
+            --danger:#c62828; --success:#2e7d32; --node-border:#2c7da0; --timeline-line:#2c7da0;
+            --timeline-item-bg:#f0f8ff; --toast-bg:#f0f8ff; --reader-bg:#ecf5fc; --reader-text:#1e4a6e;
+            --reader-card:#ffffff;
+        }
+        body {
+            font-family:'Inter',sans-serif;
+            background:linear-gradient(135deg,var(--bg-start)0%,var(--bg-end)100%);
+            min-height:100vh; color:var(--text-main); transition:background 0.3s ease,color 0.2s;
+        }
+        .login-container { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.96); backdrop-filter:blur(8px); display:flex; justify-content:center; align-items:center; z-index:1000; }
+        .login-card { background:var(--card-bg); backdrop-filter:blur(12px); border-radius:2rem; padding:2rem; width:360px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5); border:1px solid var(--card-border); text-align:center; }
+        .greeting-line { font-size:0.9rem; color:var(--primary-light); margin-bottom:1.5rem; }
+        .input-group { margin-bottom:1rem; }
+        .input-group input { width:100%; padding:0.75rem 1rem; background:var(--input-bg); border:1px solid var(--card-border); border-radius:1rem; color:var(--text-main); outline:none; }
+        .login-btn { width:100%; padding:0.75rem; background:var(--primary); border:none; border-radius:1rem; color:white; font-weight:600; cursor:pointer; }
+        .manage-icon-sm { margin-top:1rem; font-size:0.85rem; color:var(--text-muted); cursor:pointer; display:inline-block; background:rgba(148,163,184,0.1); padding:0.3rem 0.8rem; border-radius:2rem; }
+        .login-theme-selector { position:fixed; bottom:20px; right:20px; z-index:1100; display:flex; gap:8px; background:rgba(0,0,0,0.5); padding:6px 12px; border-radius:3rem; backdrop-filter:blur(4px); }
+        .theme-btn { width:30px; height:30px; border-radius:50%; cursor:pointer; border:2px solid transparent; }
+        .theme-btn.active { border-color:white; transform:scale(1.05); }
+        .theme-default { background:linear-gradient(135deg,#8b5cf6,#4c1d95); }
+        .theme-cream { background:#fef9e6; border:1px solid #e2d5b6; }
+        .theme-mint { background:#e8f5e9; border:1px solid #b9d8b3; }
+        .theme-azure { background:#e3f2fd; border:1px solid #b3d4f0; }
+        .app-container { display:none; height:100vh; overflow:hidden; }
+        .sidebar { width:280px; background:var(--sidebar-bg); backdrop-filter:blur(8px); border-right:1px solid var(--card-border); display:flex; flex-direction:column; padding:2rem 0; flex-shrink:0; }
+        .nav-item { display:flex; align-items:center; gap:12px; padding:12px 24px; margin:4px 12px; border-radius:1rem; cursor:pointer; color:var(--text-muted); transition:0.2s; }
+        .nav-item.active { background:var(--primary); color:white; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+        .main-content { flex:1; overflow-y:auto; padding:2rem; background:rgba(0,0,0,0.1); }
+        .card { background:var(--card-bg); border-radius:1.5rem; padding:1.5rem; border:1px solid var(--card-border); margin-bottom:1.5rem; }
+        .graph-wrapper { position:relative; }
+        #network-container { width:100%; height:60vh; background:var(--input-bg); border-radius:1rem; border:1px solid var(--card-border); }
+        .node-info-corner { position:absolute; top:20px; right:20px; background:var(--card-bg); backdrop-filter:blur(12px); border-radius:1rem; padding:12px 18px; max-width:280px; border-left:4px solid var(--primary); z-index:20; display:none; }
+        .relation-builder { margin-top:12px; padding:12px; background:var(--input-bg); border-radius:1rem; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+        .relation-builder input, .relation-builder select { width:auto; flex:1; min-width:100px; }
+        .character-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1.5rem; margin-top:1rem; }
+        .character-card { background:var(--input-bg); border-radius:1.2rem; overflow:hidden; transition:transform 0.2s; border:1px solid var(--card-border); cursor:pointer; text-align:center; padding:1rem 0.5rem; position:relative; }
+        .character-card.role-protagonist { border:3px solid #fbbf24; box-shadow:0 0 12px rgba(251,191,36,0.5); }
+        .character-card.role-antagonist { border:3px solid #ef4444; box-shadow:0 0 8px rgba(239,68,68,0.4); }
+        .character-card.role-supporter { border:2px solid #3b82f6; }
+        .character-card.role-extra { border:1px solid #8b5cf6; }
+        .protagonist-badge { position:absolute; top:6px; right:10px; background:#fbbf24; color:#0f172a; font-size:0.7rem; padding:2px 8px; border-radius:20px; }
+        .character-avatar { width:90px; height:90px; border-radius:50%; object-fit:cover; background:#ccc; margin:0 auto 0.6rem; display:block; border:2px solid var(--primary); cursor:pointer; }
+        .character-name { font-weight:600; font-size:1.1rem; margin:6px 0 4px; }
+        .character-info { font-size:0.7rem; background:var(--card-border); border-radius:20px; padding:4px 8px; margin:6px 0; display:inline-block; }
+        .card-buttons { display:flex; justify-content:center; gap:12px; margin-top:8px; }
+        .sort-handle { cursor:move; margin-right:8px; color:var(--text-muted); }
+        .filter-buttons { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:1.5rem; }
+        .filter-chip { background:var(--card-border); padding:6px 14px; border-radius:2rem; cursor:pointer; font-size:0.8rem; color:var(--text-muted); }
+        .filter-chip.active { background:var(--primary); color:white; }
+        .story-tabs { display:flex; gap:12px; border-bottom:1px solid var(--card-border); margin-bottom:1rem; }
+        .story-tab { padding:8px 20px; cursor:pointer; border-radius:2rem 2rem 0 0; background:var(--input-bg); color:var(--text-muted); }
+        .story-tab.active { background:var(--primary); color:white; }
+        .timeline-controls { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1.5rem; background:var(--input-bg); padding:1rem; border-radius:1rem; }
+        .calendar-unit { font-size:1.2rem; font-weight:bold; background:var(--card-border); padding:0.3rem 1rem; border-radius:2rem; cursor:pointer; }
+        .range-filter { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+        .range-filter input { width:100px; }
+        .timeline-vertical { position:relative; padding-left:2rem; margin-top:1rem; }
+        .timeline-vertical::before { content:''; position:absolute; left:12px; top:0; bottom:0; width:2px; background:var(--timeline-line); }
+        .timeline-item,.storyline-item { margin-bottom:1.8rem; background:var(--timeline-item-bg); border-radius:1rem; padding:1rem 1.2rem; border-left:4px solid var(--primary-light); }
+        .timeline-year { font-weight:700; font-size:1.2rem; color:var(--primary-light); margin-bottom:0.3rem; }
+        .item-actions { display:flex; gap:12px; margin-top:10px; flex-wrap:wrap; }
+        .timeline-image,.storyline-image { max-width:100%; max-height:120px; border-radius:0.5rem; margin-top:8px; cursor:pointer; }
+        .chapter-list { display:flex; flex-direction:column; gap:8px; margin-bottom:1rem; max-height:300px; overflow-y:auto; }
+        .chapter-item { background:var(--input-bg); padding:10px 16px; border-radius:1rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer; border-left:3px solid var(--primary); }
+        .draft-item,.image-item { background:var(--input-bg); padding:8px 12px; border-radius:1rem; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
+        .image-card { width:120px; text-align:center; cursor:pointer; transition:transform 0.1s; }
+        .image-card:hover { transform:scale(1.02); }
+        .image-card img { width:100%; height:100px; object-fit:cover; border-radius:0.5rem; border:1px solid var(--card-border); }
+        .custom-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:5000; }
+        .custom-modal-content { background:var(--card-bg); border-radius:1.5rem; width:700px; max-width:90%; padding:1.8rem; border:1px solid var(--primary); max-height:85vh; overflow-y:auto; }
+        .reader-modal { background:var(--reader-bg); color:var(--reader-text); }
+        .reader-content { font-family:'Georgia','Times New Roman',serif; font-size:1.1rem; line-height:1.8; text-indent:2em; margin:1.5rem 0; white-space:pre-wrap; }
+        .reader-title { font-size:1.8rem; font-weight:bold; text-align:center; margin-bottom:1rem; }
+        .reader-nav { display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--card-border); }
+        .world-tree { margin-left:0rem; }
+        .world-item { background:var(--input-bg); border-radius:1rem; margin-bottom:0.8rem; border:1px solid var(--card-border); overflow:hidden; }
+        .world-header { display:flex; justify-content:space-between; align-items:center; padding:0.8rem 1rem; cursor:pointer; background:var(--card-bg); flex-wrap:wrap; gap:6px; }
+        .world-title { font-weight:bold; font-size:1rem; display:flex; align-items:center; gap:8px; user-select:none; }
+        .world-content { display:none; padding:1rem; border-top:1px solid var(--card-border); }
+        .world-content.active { display:block; }
+        .world-content textarea { width:100%; min-height:150px; background:var(--input-bg); border:1px solid var(--card-border); border-radius:0.75rem; padding:0.75rem; color:var(--text-main); font-family:'Georgia',serif; }
+        .world-images { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+        .world-image-item { position:relative; width:100px; text-align:center; }
+        .world-image-item img { width:100%; height:80px; object-fit:cover; border-radius:0.5rem; border:1px solid var(--card-border); cursor:pointer; }
+        .delete-world-img { position:absolute; top:-8px; right:-8px; background:var(--danger); border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.7rem; color:white; z-index:2; }
+        .children-container { margin-left:1.5rem; margin-top:0.5rem; }
+        .faction-card { background:var(--input-bg); border-radius:1.2rem; padding:1rem; margin-bottom:1rem; border-left:4px solid var(--primary); display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+        .faction-avatar { width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid var(--primary); cursor:pointer; }
+        .faction-info { flex:1; min-width:200px; }
+        .member-tag { background:var(--card-border); border-radius:20px; padding:4px 10px; display:inline-flex; align-items:center; gap:6px; margin:4px; }
+        .account-item { background:var(--input-bg); border-radius:1rem; padding:12px; margin-bottom:10px; }
+        .char-tabs { display:flex; gap:8px; border-bottom:1px solid var(--card-border); margin-bottom:1rem; }
+        .char-tab { padding:6px 16px; cursor:pointer; border-radius:2rem 2rem 0 0; background:var(--input-bg); }
+        .char-tab.active { background:var(--primary); color:white; }
+        .tab-pane { display:none; }
+        .tab-pane.active { display:block; }
+        button { background:var(--primary); border:none; padding:8px 18px; border-radius:2rem; color:white; cursor:pointer; font-family:inherit; font-size:0.85rem; }
+        button.secondary { background:#334155; }
+        button.small-btn { padding:4px 12px; font-size:0.75rem; }
+        input,textarea,select { background:var(--input-bg); border:1px solid var(--card-border); border-radius:0.75rem; padding:8px 12px; color:var(--text-main); width:100%; margin-top:4px; font-family:inherit; }
+        .flex-between { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+        .search-box { margin-bottom:1rem; display:flex; gap:8px; }
+        .relation-item { background:var(--card-bg); border-radius:1rem; padding:8px 12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
+        .big-image-modal { max-width:90vw; max-height:90vh; }
+        .big-image-modal img { max-width:100%; max-height:80vh; object-fit:contain; }
+        .custom-toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--toast-bg); color:var(--text-main); padding:10px 24px; border-radius:2rem; border-left:4px solid var(--primary); z-index:9999; animation:fadeInUp 0.3s ease, fadeOut 0.5s 1.7s ease forwards; box-shadow:0 8px 24px rgba(0,0,0,0.3); }
+        @keyframes fadeInUp { from{opacity:0;transform:translateX(-50%) translateY(20px);} to{opacity:1;transform:translateX(-50%) translateY(0);} }
+        @keyframes fadeOut { to{opacity:0;transform:translateX(-50%) translateY(-10px);} }
+    </style>
+</head>
+<body class="theme-cream">
+<div id="loginPanel" class="login-container">
+        <div class="login-card">
+            <h2><i class="fas fa-scroll"></i> 叙事工坊</h2>
+            <div class="greeting-line" id="randomGreeting">加载中...</div>
+            <div class="input-group"><input type="text" id="loginUsername" placeholder="账号"></div>
+            <div class="input-group"><input type="password" id="loginPassword" placeholder="密码"></div>
+            <button class="login-btn" id="doLoginBtn">进入世界</button>
+            <div style="margin-top:1rem;"><span class="manage-icon-sm" id="openAccountManageBtn"><i class="fas fa-users-cog"></i> 管理账号</span></div>
+        </div>
+        <div class="login-theme-selector" id="loginThemeSelector">
+            <div class="theme-btn theme-cream" data-theme="cream" title="护眼米黄"></div>
+            <div class="theme-btn theme-mint" data-theme="mint" title="淡绿清新"></div>
+            <div class="theme-btn theme-azure" data-theme="azure" title="浅蓝宁静"></div>
+            <div class="theme-btn theme-default" data-theme="default" title="暗夜模式"></div>
+        </div>
+    </div>
+    <div id="appMain" class="app-container">
+        <div class="sidebar">
+            <div style="padding:0 24px 24px;"><h3><i class="fas fa-dragon"></i> OC Workspace</h3><div id="secretAlert"></div></div>
+            <div class="nav-item active" data-view="graph"><i class="fas fa-project-diagram"></i> <span>人物关系图</span></div>
+            <div class="nav-item" data-view="characters"><i class="fas fa-address-card"></i> <span>人物档案</span></div>
+            <div class="nav-item" data-view="timeline"><i class="fas fa-history"></i> <span>时间线·故事线</span></div>
+            <div class="nav-item" data-view="world"><i class="fas fa-globe-asia"></i> <span>世界观</span></div>
+            <div class="nav-item" data-view="factions"><i class="fas fa-flag-checkered"></i> <span>阵营</span></div>
+            <div class="nav-item" data-view="drafts"><i class="fas fa-pencil-alt"></i> <span>草稿箱</span></div>
+            <div class="nav-item" data-view="images"><i class="fas fa-images"></i> <span>图片库</span></div>
+            <div class="nav-item" data-view="mainstory"><i class="fas fa-book-open"></i> <span>正文</span></div>
+            <div class="nav-item" data-view="ifline"><i class="fas fa-code-branch"></i> <span>IF线</span></div>
+            <div style="margin-top:auto; padding:20px 24px;"><i class="fas fa-user-circle"></i> <span id="currentUserSpan"></span><button id="logoutBtn" class="secondary" style="margin-top:10px;width:100%;">登出</button></div>
+        </div>
+        <div class="main-content">
+            <div id="graphView" class="view-pane"><div class="card graph-wrapper"><h3><i class="fas fa-share-alt"></i> 关系图谱 (拖拽节点，双击关系线可编辑)</h3><div id="network-container"></div><div id="nodeInfoCorner" class="node-info-corner"><div><strong id="cornerCharName"></strong></div><div id="cornerCharSlogan" style="font-size:0.8rem;margin-top:4px;"></div><button id="cornerJumpBtn" style="margin-top:8px;">📖 查看档案</button></div><div class="relation-builder"><input type="text" id="relSource" placeholder="角色A" list="characterList"><span style="font-size:0.8rem;">→</span><input type="text" id="relType" placeholder="关系 (例: 喜欢)"><span style="font-size:0.8rem;">→</span><input type="text" id="relTarget" placeholder="角色B" list="characterList"><button id="addRelationBtnGraph">➕ 添加/更新有向关系</button></div></div></div>
+            <div id="charactersView" class="view-pane" style="display:none;"><div class="flex-between"><h3>九宫格·人物档案</h3><div><button id="sortCharactersBtn">✏️ 排序模式</button><button id="newCharacterBtn" style="margin-left:8px;">新建角色</button></div></div><div class="filter-buttons" id="categoryFilterBar"></div><div id="characterListContainer" class="character-grid"></div></div>
+            <div id="timelineView" class="view-pane" style="display:none;"><div class="card"><div class="story-tabs"><div class="story-tab active" data-tab="timeline">📅 大事年表</div><div class="story-tab" data-tab="storyline">📖 故事线</div></div><div id="timelinePanel"><div class="timeline-controls"><div><span class="calendar-unit" id="calendarUnitDisplay">星历</span></div><div class="range-filter"><input type="number" id="yearFrom" placeholder="起始年"><span>—</span><input type="number" id="yearTo" placeholder="结束年"><button id="applyYearRangeBtn">筛选</button></div></div><div id="timelineVerticalContainer" class="timeline-vertical"></div><button id="addTimelineEventBtn">添加大事记</button></div><div id="storylinePanel" style="display:none;"><div class="flex-between"><h3>故事线</h3><button id="addStoryBeatBtn">添加剧情节点</button></div><div id="storylineContainer" class="timeline-vertical"></div></div></div></div>
+            <div id="worldView" class="view-pane" style="display:none;"><div class="card"><div class="flex-between"><h3><i class="fas fa-globe"></i> 世界观 · 层级条目</h3><button id="addWorldRootBtn">+ 添加根节点</button></div><div id="worldTreeContainer" class="world-tree" style="margin-top:1rem;"></div></div></div>
+            <div id="factionsView" class="view-pane" style="display:none;"><div class="card"><div class="flex-between"><h3>势力阵营</h3><button id="addFactionBtn">新建阵营</button></div><div id="factionsContainer"></div></div></div>
+            <div id="draftsView" class="view-pane" style="display:none;"><div class="card"><div class="flex-between"><h3><i class="fas fa-pencil-alt"></i> 草稿箱</h3><button id="newDraftBtn">+ 新建草稿</button></div><div id="draftsList"></div></div></div>
+            <div id="imagesView" class="view-pane" style="display:none;"><div class="card"><div class="flex-between"><h3><i class="fas fa-images"></i> 图片库</h3><button id="uploadImageBtn">+ 上传图片</button></div><div id="imagesList" style="display:flex; flex-wrap:wrap; gap:12px; margin-top:1rem;"></div></div></div>
+            <div id="mainstoryView" class="view-pane" style="display:none;"><div class="card"><h3>正文 · 章节叙事</h3><div class="search-box"><input type="text" id="chapterSearch" placeholder="搜索章节..."><button id="searchChapterBtn">搜索</button></div><div class="flex-between"><button id="newChapterBtn">新建章节</button><span id="chapterCount"></span></div><div class="chapter-list" id="chapterList"></div><div class="flex-between" style="margin-top:1rem;"><button id="previewChapterBtn" style="background:var(--primary-light);">📖 阅读模式</button></div></div></div>
+            <div id="iflineView" class="view-pane" style="display:none;"><div class="card"><h3>IF线 · 分支叙事</h3><div class="search-box"><input type="text" id="ifSearch" placeholder="搜索IF线..."><button id="searchIfBtn">搜索</button></div><div class="flex-between"><button id="newIfChapterBtn">新建IF分支</button><span id="ifCount"></span></div><div class="chapter-list" id="ifChapterList"></div></div></div>
+        </div>
+    </div>
+    <datalist id="characterList"></datalist>
+<script>
+        (function() {
+            // ================== 核心变量 ==================
+            let accounts=[],currentAccount=null,currentOC=null,network=null;
+            let currentCharFilter="all",isSortingMode=false;
+            const greetingMessages=["✨ 欢迎登录，亲爱的造物主 ✨","📖 编织命运的丝线","⚔️ 创世者归来","🌙 星辰为你加冕"];
+            const STORAGE_ACCOUNTS = 'oc_accounts_force_refresh_v2';
+
+            // ================== 工具函数 ==================
+            function showMessage(t,e){const n=document.createElement('div');n.className='custom-toast';n.style.borderLeftColor=e?'#ef4444':'var(--primary)';n.innerText=t;document.body.appendChild(n);setTimeout(()=>n.remove(),2200)}
+            function customPrompt(t,e="",n=""){return new Promise(s=>{const o=document.createElement('div');o.className='custom-modal';o.innerHTML=`<div class="custom-modal-content"><h3>${t}</h3><input type="text" id="promptInput" value="${e.replace(/"/g,'&quot;')}" placeholder="${n}"><div class="flex-between" style="margin-top:1rem;"><button id="promptConfirm">确认</button><button id="promptCancel" class="secondary">取消</button></div></div>`;document.body.appendChild(o);const i=o.querySelector('#promptInput');o.querySelector('#promptConfirm').onclick=()=>{const t=i.value;o.remove();s(t)};o.querySelector('#promptCancel').onclick=()=>{o.remove();s(null)};i.focus()})}
+            function customConfirm(t){return new Promise(e=>{const n=document.createElement('div');n.className='custom-modal';n.innerHTML=`<div class="custom-modal-content"><p>${t}</p><div class="flex-between"><button id="confirmYes">确定</button><button id="confirmNo" class="secondary">取消</button></div></div>`;document.body.appendChild(n);n.querySelector('#confirmYes').onclick=()=>{n.remove();e(true)};n.querySelector('#confirmNo').onclick=()=>{n.remove();e(false)}})}
+            function escapeHtml(t){return t?.replace(/[&<>]/g,function(t){if(t==='&')return'&amp;';if(t==='<')return'&lt;';if(t==='>')return'&gt;';return t})||''}
+            function insertImageModal(t){const e=document.createElement('div');e.className='custom-modal';e.innerHTML=`<div class="custom-modal-content"><h3><i class="fas fa-image"></i> 插入图片</h3><div><label>📁 本地上传</label><input type="file" id="localImageInput" accept="image/*"></div><div style="margin:12px 0;">或</div><div><label>🔗 图片网址</label><input type="text" id="urlImageInput" placeholder="https://..."></div><div id="previewContainer" style="margin-top:12px;"></div><div class="flex-between" style="margin-top:1rem;"><button id="confirmImageBtn">插入</button><button id="cancelImageBtn" class="secondary">取消</button></div></div>`;document.body.appendChild(e);const n=e.querySelector('#localImageInput'),s=e.querySelector('#urlImageInput'),o=e.querySelector('#previewContainer');let i=null;n.onchange=e=>{const t=e.target.files[0];if(t){const e=new FileReader;e.onload=e=>{i=e.target.result;o.innerHTML=`<img src="${i}" style="max-width:100%; max-height:150px;">`;s.value=''};e.readAsDataURL(t)}};s.oninput=()=>{i=s.value.trim();if(i)o.innerHTML=`<img src="${i}" style="max-width:100%; max-height:150px;">`;else o.innerHTML='';n.value=''};e.querySelector('#confirmImageBtn').onclick=()=>{if(i){t(i);e.remove()}else showMessage("请选择图片或输入网址",!0)};e.querySelector('#cancelImageBtn').onclick=()=>e.remove()}
+            document.addEventListener('click',function(t){const e=t.target.closest('img.previewable-img');if(e){t.stopPropagation();const n=e.getAttribute('src');if(n&&n.trim()!==''){const t=document.createElement('div');t.className='custom-modal';t.innerHTML=`<div class="custom-modal-content big-image-modal"><img src="${n}" style="max-width:100%; max-height:80vh;"><div class="flex-between" style="margin-top:1rem;"><button class="closeBigImgBtn" class="secondary">关闭</button></div></div>`;document.body.appendChild(t);t.querySelector('.closeBigImgBtn').onclick=()=>t.remove()}}});
+
+            // ================== 账户与数据 ==================
+            function getDefaultOCData(){return{calendarUnit:"星历",worldTree:[{id:"w1",title:"艾泽拉斯大陆",content:"充满魔法与战争的土地。",images:[],children:[]}],factions:[{id:"f1",name:"光辉议会",description:"秩序守护者",size:"1200人",avatar:""}],timelineEvents:[{id:"ev1",year:1012,title:"混沌之战",description:"古神陨落",image:""}],storyline:[{id:"s1",title:"序幕·觉醒",description:"主角踏上旅途",order:1,image:""}],characters:[{id:"c1",name:"艾琳·星光",age:24,gender:"女",camp:"光辉议会",title:"大法师",slogan:"星光所向",background:"魔法天才",lifeHistory:"星陨之年",personality:"温柔",hobbies:"观星",avatarUrl:"https://api.dicebear.com/7.x/avataaars/svg?seed=Elara",role:"主角",relationToProtagonist:"本人",order:0,mainStory:{firstMeet:"迷雾森林",keyEvents:"混沌之战",currentStatus:"领袖"},relationships:[]},{id:"c2",name:"雷恩·铁刃",age:27,gender:"男",camp:"自由联盟",title:"佣兵团长",slogan:"刀锋意志",background:"流浪剑客",lifeHistory:"角斗士出身",personality:"豪爽",hobbies:"战斗",avatarUrl:"https://api.dicebear.com/7.x/avataaars/svg?seed=Ragnar",role:"配角",relationToProtagonist:"挚友",order:1,relationships:[]}],mainChapters:[{id:"ch1",title:"第一章·迷雾初现",content:"夜色笼罩着边境小镇..."}],ifChapters:[{id:"if1",title:"IF线·暗影主宰",content:"假如主角选择了黑暗之路..."}],drafts:[{id:"d1",title:"未命名草稿",content:""}],images:[]}}
+            function saveAccounts(){localStorage.setItem(STORAGE_ACCOUNTS,JSON.stringify(accounts))}
+            function initAccounts(){let t=localStorage.getItem(STORAGE_ACCOUNTS);t?accounts=JSON.parse(t):(accounts=[{id:"1",username:"creator",password:"123",secret:!1,ocData:getDefaultOCData()}],saveAccounts())}
+            
+            // ================== 终极强制刷新方案 ==================
+            function getActiveView(){
+                const activeTab = document.querySelector('.nav-item.active');
+                return activeTab ? activeTab.dataset.view : 'graph';
+            }
+            
+            function forceHardRefresh(){
+                console.log("强制执行硬刷新...");
+                const view = getActiveView();
+                
+                // 重新从localStorage加载最新数据
+                const savedData = localStorage.getItem(STORAGE_ACCOUNTS);
+                if(savedData){
+                    const allAccounts = JSON.parse(savedData);
+                    const currentAcc = allAccounts.find(acc => acc.id === currentAccount.id);
+                    if(currentAcc){
+                        currentOC = JSON.parse(JSON.stringify(currentAcc.ocData));
+                    }
+                }
+                
+                // 强制重新渲染
+                if(view === 'graph') {
+                    if(network) network.destroy();
+                    renderGraph();
+                } else if(view === 'characters') {
+                    document.getElementById('characterListContainer').innerHTML = '';
+                    renderCharacters();
+                } else if(view === 'timeline') {
+                    document.getElementById('timelineVerticalContainer').innerHTML = '';
+                    renderTimelineAndStory();
+                } else if(view === 'world') {
+                    document.getElementById('worldTreeContainer').innerHTML = '';
+                    renderWorldEntries();
+                } else if(view === 'factions') {
+                    document.getElementById('factionsContainer').innerHTML = '';
+                    renderFactions();
+                } else if(view === 'drafts') {
+                    document.getElementById('draftsList').innerHTML = '';
+                    renderDrafts();
+                } else if(view === 'images') {
+                    document.getElementById('imagesList').innerHTML = '';
+                    renderImages();
+                } else if(view === 'mainstory') {
+                    document.getElementById('chapterList').innerHTML = '';
+                    renderMainChapters();
+                } else if(view === 'ifline') {
+                    document.getElementById('ifChapterList').innerHTML = '';
+                    renderIfChapters();
+                }
+            }
+            
+            function saveCurrentOC(){
+                if(currentAccount){
+                    // 1. 立即保存到内存
+                    currentAccount.ocData = JSON.parse(JSON.stringify(currentOC));
+                    
+                    // 2. 立即保存到localStorage
+                    saveAccounts();
+                    
+                    // 3. 立即强制刷新UI（三重保险）
+                    forceHardRefresh();
+                    
+                    // 4. 延迟再次刷新，确保所有异步操作完成
+                    setTimeout(() => forceHardRefresh(), 50);
+                    setTimeout(() => forceHardRefresh(), 200);
+                    
+                    console.log("数据已保存并强制刷新");
+                }
+            }
+            
+            function setRandomGreeting(){document.getElementById('randomGreeting').innerText=greetingMessages[Math.floor(Math.random()*greetingMessages.length)]}
+            function setLoginTheme(t){document.body.classList.remove('theme-cream','theme-mint','theme-azure','theme-default');document.body.classList.add(`theme-${t}`);localStorage.setItem('login_theme',t);document.querySelectorAll('.theme-btn').forEach(e=>{e.classList.remove('active');if(e.dataset.theme===t)e.classList.add('active')})}
+            function loadLoginTheme(){const t=localStorage.getItem('login_theme')||'cream';setLoginTheme(t)}
+            document.querySelectorAll('.theme-btn').forEach(t=>t.addEventListener('click',()=>setLoginTheme(t.dataset.theme)));
+            async function changePassword(t){const e=await customPrompt("✝️ 修改密码忏悔录 ✝️\n请写下至少100字的忏悔理由","","忏悔内容...");if(!e)return;if(e.length<100){showMessage(`忏悔不足100字（当前${e.length}字）`,!0);return}const n=await customPrompt("新密码","");if(!n)return;t.password=n;saveAccounts();showMessage("密码修改成功，请重新登录");currentAccount&&currentAccount.id===t.id&&setTimeout(()=>logout(),1500)}
+            async function openAccountManager(){const t=document.createElement('div');t.className='custom-modal';t.innerHTML=`<div class="custom-modal-content" style="width:600px;"><h3>账号管理中心</h3><div id="accountListContainer"></div><div class="flex-between"><button id="newAccountBtnModal">新建账号</button><button id="closeAccountMgr" class="secondary">关闭</button></div></div>`;document.body.appendChild(t);const e=()=>{const n=t.querySelector('#accountListContainer');n.innerHTML=accounts.map(t=>`<div class="account-item"><div class="flex-between"><div><strong>${escapeHtml(t.username)}</strong> ${t.secret?'🔒涉密':''} ${currentAccount?.id===t.id?'当前':''}</div><div><button class="toggleSecret" data-id="${t.id}" style="background:#475569;">${t.secret?'解除涉密':'设为涉密'}</button><button class="changePwdBtn" data-id="${t.id}" style="background:#f59e0b;">修改密码</button><button class="delAcc" data-id="${t.id}" style="background:#b91c1c;">删除</button></div></div></div>`).join('');n.querySelectorAll('.toggleSecret').forEach(t=>t.addEventListener('click',()=>{let e=accounts.find(n=>n.id===t.dataset.id);if(e){e.secret=!e.secret;saveAccounts();e();currentAccount?.id===e.id&&(showMessage("涉密状态已变，请重新登录",!0),setTimeout(()=>logout(),1500))}}));n.querySelectorAll('.changePwdBtn').forEach(t=>t.addEventListener('click',async()=>{let n=accounts.find(e=>e.id===t.dataset.id);n&&await changePassword(n);e()}));n.querySelectorAll('.delAcc').forEach(n=>n.addEventListener('click',async()=>{let s=accounts.find(t=>t.id===n.dataset.id);if(!s)return;currentAccount?.id===s.id?showMessage("不能删除当前账号",!0):await customConfirm(`删除账号 ${s.username}?`)&&(accounts=accounts.filter(t=>t.id!==s.id),saveAccounts(),e(),currentAccount?.id===s.id&&logout())}))};e();t.querySelector('#newAccountBtnModal').addEventListener('click',async()=>{let n=await customPrompt("新账号名");if(!n)return;if(accounts.some(t=>t.username===n)){showMessage("已存在",!0);return}let s=await customPrompt("密码");if(s===null)return;accounts.push({id:Date.now().toString(),username:n,password:s,secret:!1,ocData:getDefaultOCData()});saveAccounts();e();showMessage("创建成功")});t.querySelector('#closeAccountMgr').addEventListener('click',()=>t.remove())}
+
+            // ================== 角色管理 ==================
+            function addDirectedRelation(t,e,n){const s=currentOC.characters.find(r=>r.id===t);if(!s)return!1;s.relationships=s.relationships.filter(t=>!(t.targetId===e));s.relationships.push({targetId:e,type:n});saveCurrentOC();return!0}
+            function deleteDirectedRelation(t,e){const n=currentOC.characters.find(s=>s.id===t);if(n){n.relationships=n.relationships.filter(t=>!(t.targetId===e));saveCurrentOC();return!0}return!1}
+            function addRelationFromBuilder(t,e,n){const s=currentOC.characters.find(r=>r.name===t),o=currentOC.characters.find(r=>r.name===e);if(!s||!o){showMessage("角色不存在",!0);return}if(s.id===o.id){showMessage("不能与自己建立关系",!0);return}addDirectedRelation(s.id,o.id,n);showMessage(`已添加/更新 ${s.name} → ${o.name} : ${n}`);renderGraph();renderCharacters()}
+            function openCharacterForm(t=null){
+                let e=t?currentOC.characters.find(n=>n.id===t):null;
+                const n=!e;
+                n&&(e={id:Date.now().toString(),name:"",age:0,gender:"",camp:"",title:"",slogan:"",background:"",lifeHistory:"",personality:"",hobbies:"",avatarUrl:"",role:"配角",relationToProtagonist:"",order:currentOC.characters.length,mainStory:{firstMeet:"",keyEvents:"",currentStatus:""},relationships:[]});
+                const s=document.createElement('div');s.className='custom-modal';
+                s.innerHTML=`<div class="custom-modal-content" style="max-width:650px;"><h3>${n?'新建角色':'编辑角色'}</h3><div class="char-tabs"><div class="char-tab active" data-tab="basic">基础</div><div class="char-tab" data-tab="personality">性格爱好</div><div class="char-tab" data-tab="background">背景生平</div><div class="char-tab" data-tab="story">故事</div><div class="char-tab" data-tab="relations">关系</div></div><div id="tabBasic" class="tab-pane active"><div style="display:flex;gap:8px;align-items:center;"><img id="avatarPreview" src="${e.avatarUrl||'https://api.dicebear.com/7.x/avataaars/svg?seed=preview'}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;"><button id="uploadAvatarBtn" type="button">📷 插入图片</button></div><input type="hidden" id="charAvatarUrl" value="${e.avatarUrl||''}"><label>姓名</label><input id="charName" value="${escapeHtml(e.name)}"><div style="display:flex;gap:6px;"><input id="charAge" placeholder="年龄" value="${e.age}"><input id="charGender" placeholder="性别" value="${escapeHtml(e.gender)}"><input id="charCamp" placeholder="阵营" value="${escapeHtml(e.camp)}"><input id="charTitle" placeholder="头衔" value="${escapeHtml(e.title)}"></div><label>小说身份</label><select id="charRole"><option ${e.role==='主角'?'selected':''}>主角</option><option ${e.role==='配角'?'selected':''}>配角</option><option ${e.role==='路人'?'selected':''}>路人</option><option ${e.role==='反派'?'selected':''}>反派</option></select><label>Slogan</label><input id="charSlogan" value="${escapeHtml(e.slogan||'')}"></div><div id="tabPersonality" class="tab-pane"><label>性格特点</label><textarea id="charPersonality" rows="3">${escapeHtml(e.personality||'')}</textarea><label>兴趣爱好</label><textarea id="charHobbies" rows="3">${escapeHtml(e.hobbies||'')}</textarea></div><div id="tabBackground" class="tab-pane"><label>深度背景</label><textarea id="charBg" rows="3">${escapeHtml(e.background||'')}</textarea><label>历史生平</label><textarea id="charLifeHistory" rows="3">${escapeHtml(e.lifeHistory||'')}</textarea></div><div id="tabStory" class="tab-pane"><label>初次见面</label><input id="charFirstMeet" value="${escapeHtml(e.mainStory.firstMeet||'')}"><label>关键事件</label><input id="charKeyEvent" value="${escapeHtml(e.mainStory.keyEvents||'')}"><label>现状关系</label><input id="charStatus" value="${escapeHtml(e.mainStory.currentStatus||'')}"></div><div id="tabRelations" class="tab-pane"><div style="margin-bottom:12px;"><strong>与主角的关系（单向）</strong><input id="charRelationToProtagonist" value="${escapeHtml(e.relationToProtagonist||'')}" placeholder="例如：挚友、宿敌、本人..."></div><div><strong>其他有向关系（角色 → 其他角色）</strong> <button id="addRelationBtn" type="button" style="margin-left:8px;padding:2px 8px;">+ 添加关系</button></div><div id="otherRelationsList"></div></div><div style="margin-top:16px;display:flex;gap:12px;"><button id="saveCharModalBtn">保存</button><button id="closeCharModal" class="secondary">取消</button></div></div>`;
+                document.body.appendChild(s);
+                const o=s.querySelector('#avatarPreview'),i=s.querySelector('#charAvatarUrl');
+                s.querySelector('#uploadAvatarBtn').addEventListener('click',()=>{insertImageModal(t=>{i.value=t;o.src=t;showMessage("头像已更新，保存后生效")})});
+                const r=()=>{const t=s.querySelector('#otherRelationsList'),o=e.relationships||[];0===o.length?t.innerHTML='<div style="color:var(--text-muted);">暂无关系，点击上方添加</div>':t.innerHTML=o.map(t=>{const n=currentOC.characters.find(e=>e.id===t.targetId);return`<div class="relation-item"><span><strong>${escapeHtml(e.name)}</strong> → <strong>${n?escapeHtml(n.name):'未知'}</strong> : ${escapeHtml(t.type)}</span><button class="deleteRelationBtn" data-target="${t.targetId}" style="background:var(--danger);padding:2px 8px;">删除</button></div>`}).join('');t.querySelectorAll('.deleteRelationBtn').forEach(t=>t.addEventListener('click',()=>{deleteDirectedRelation(e.id,t.dataset.target);const n=currentOC.characters.find(t=>t.id===e.id);n&&Object.assign(e,n);r()}))};r();
+                s.querySelector('#addRelationBtn').addEventListener('click',async()=>{const t=currentOC.characters.filter(t=>t.id!==e.id);if(0===t.length){showMessage("没有其他角色",!0);return}const n=t.map(t=>`<option value="${t.id}">${escapeHtml(t.name)}</option>`).join(''),o=await customPrompt("关系类型","挚友");if(!o)return;const i=await new Promise(t=>{const e=document.createElement('div');e.className='custom-modal';e.innerHTML=`<div class="custom-modal-content"><h3>选择目标角色</h3><select id="targetSelect">${n}</select><div class="flex-between"><button id="selConfirm">确认</button><button id="selCancel" class="secondary">取消</button></div></div>`;document.body.appendChild(e);e.querySelector('#selConfirm').onclick=()=>{const n=e.querySelector('#targetSelect').value;e.remove();t(n)};e.querySelector('#selCancel').onclick=()=>{e.remove();t(null)}});i&&o&&(addDirectedRelation(e.id,i,o),Object.assign(e,currentOC.characters.find(t=>t.id===e.id)),r())});
+                s.querySelectorAll('.char-tab').forEach(t=>t.addEventListener('click',()=>{s.querySelectorAll('.char-tab').forEach(t=>t.classList.remove('active'));s.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));t.classList.add('active');s.querySelector(`#tab${t.dataset.tab.charAt(0).toUpperCase()+t.dataset.tab.slice(1)}`).classList.add('active')}));
+                s.querySelector('#closeCharModal').onclick=()=>s.remove();
+                s.querySelector('#saveCharModalBtn').onclick=()=>{const t={id:n?Date.now().toString():e.id,name:s.querySelector('#charName').value,age:parseInt(s.querySelector('#charAge').value)||0,gender:s.querySelector('#charGender').value,camp:s.querySelector('#charCamp').value,title:s.querySelector('#charTitle').value,slogan:s.querySelector('#charSlogan').value,background:s.querySelector('#charBg').value,lifeHistory:s.querySelector('#charLifeHistory').value,personality:s.querySelector('#charPersonality').value,hobbies:s.querySelector('#charHobbies').value,avatarUrl:i.value,role:s.querySelector('#charRole').value,relationToProtagonist:s.querySelector('#charRelationToProtagonist').value,order:e.order||currentOC.characters.length,mainStory:{firstMeet:s.querySelector('#charFirstMeet').value,keyEvents:s.querySelector('#charKeyEvent').value,currentStatus:s.querySelector('#charStatus').value},relationships:e.relationships};n?(currentOC.characters.push(t),showMessage(`角色 ${t.name} 已创建`)):(currentOC.characters[currentOC.characters.findIndex(t=>t.id===e.id)]=t,showMessage(`角色 ${t.name} 已更新`));saveCurrentOC();s.remove();}
+            }
+            function renderCharacters(){if(!currentOC)return;let t=currentCharFilter==="all"?currentOC.characters:currentOC.characters.filter(t=>t.role===currentCharFilter);const e=document.getElementById('characterListContainer');if(!e)return;e.innerHTML=t.map(t=>{const e=t.relationToProtagonist?` · ${t.relationToProtagonist}`:"主角"===t.role?" · 本人":"";return`<div class="character-card role-${"主角"===t.role?"protagonist":"反派"===t.role?"antagonist":"配角"===t.role?"supporter":"extra"}" data-id="${t.id}" draggable="${isSortingMode}" style="${isSortingMode?'cursor:grab;':''}">${isSortingMode?'<div class="sort-handle"><i class="fas fa-grip-vertical"></i></div>':''}${"主角"===t.role?'<div class="protagonist-badge"><i class="fas fa-star"></i> 主角</div>':''}<img class="character-avatar previewable-img" src="${t.avatarUrl||'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=err'"><div class="character-name">${escapeHtml(t.name)}</div><div class="character-info">${escapeHtml(t.role)} · ${escapeHtml(t.camp||'无阵营')} · ${escapeHtml(t.title||'无头衔')}${e}</div><div class="card-buttons"><button class="edit-char-btn small-btn" data-id="${t.id}">编辑</button><button class="delete-char-btn small-btn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div>`}).join('');document.querySelectorAll('.edit-char-btn').forEach(t=>t.addEventListener('click',t=>{t.stopPropagation();openCharacterForm(t.target.dataset.id)}));document.querySelectorAll('.delete-char-btn').forEach(t=>t.addEventListener('click',async t=>{t.stopPropagation();await customConfirm("删除角色？")&&(currentOC.characters=currentOC.characters.filter(e=>e.id!==t.target.dataset.id),saveCurrentOC(),renderCharacters(),renderGraph(),renderFactions(),showMessage("角色已删除"))}));const n=[...new Set(currentOC.characters.map(t=>t.role).filter(Boolean)),"all"],s=document.getElementById('categoryFilterBar');s&&(s.innerHTML=n.map(t=>`<div class="filter-chip ${currentCharFilter===t?'active':''}" data-cat="${t}">${"all"===t?"全部":t}</div>`).join(''));document.querySelectorAll('.filter-chip').forEach(t=>t.addEventListener('click',t=>{currentCharFilter=t.target.dataset.cat;renderCharacters()}));document.getElementById('characterList').innerHTML=currentOC.characters.map(t=>`<option value="${escapeHtml(t.name)}">`).join('')}
+            function enableSorting(){isSortingMode=!0;renderCharacters();showMessage("拖拽角色卡片调整顺序，再次点击排序模式退出");document.getElementById('sortCharactersBtn').textContent="✅ 退出排序"}
+            function disableSorting(){isSortingMode=!1;renderCharacters();document.getElementById('sortCharactersBtn').textContent="✏️ 排序模式"}
+            document.getElementById('sortCharactersBtn')?.addEventListener('click',()=>{isSortingMode?disableSorting():enableSorting()});
+
+            // ================== 关系图谱 ==================
+            function renderGraph(){if(!currentOC)return;const t=currentOC.characters.find(t=>"主角"===t.role),e=[],n=[];currentOC.characters.forEach(t=>{let s=t.avatarUrl?.trim()||"https://api.dicebear.com/7.x/avataaars/svg?seed=default";e.push({id:t.id,image:s,shape:'circularImage',size:"主角"===t.role?48:38,borderWidth:"主角"===t.role?3:1,color:{border:"主角"===t.role?'#fbbf24':"反派"===t.role?'#ef4444':'var(--primary-light)'},title:t.name})});const s=new Set;currentOC.characters.forEach(t=>{t.relationships&&t.relationships.forEach(e=>{if(currentOC.characters.some(t=>t.id===e.targetId)){const o=`${t.id}-${e.targetId}`;s.has(o)||(s.add(o),n.push({id:o,from:t.id,to:e.targetId,label:e.type,arrows:"to",color:'#facc15',font:{color:'#facc15',size:14,strokeWidth:1,strokeColor:'#0f172a'},width:3}))}})});const o=document.getElementById('network-container');if(!o||null===o.offsetParent)return;const i={nodes:new vis.DataSet(e),edges:new vis.DataSet(n)};t&&(i.nodes.update({id:t.id,x:0,y:0,fixed:!1}),(()=>{let e=(2*Math.PI)/(currentOC.characters.length-1),n=0;const s=280;currentOC.characters.forEach(o=>{if(o.id!==t.id){let t=e*n++;i.nodes.update({id:o.id,x:s*Math.cos(t),y:s*Math.sin(t),fixed:!1})}})})());network&&network.destroy();network=new vis.Network(o,i,{nodes:{shadow:!0},edges:{smooth:{type:'continuous',roundness:.5},width:2},physics:{stabilization:!0,barnesHut:{gravitationalConstant:-4e3,centralGravity:.2,springLength:250,springConstant:.04},solver:'barnesHut'},interaction:{hover:!0,tooltipDelay:100,dragNodes:!0}});network.on("click",function(t){if(t.nodes.length){let e=currentOC.characters.find(n=>n.id===t.nodes[0]);if(e){document.getElementById('cornerCharName').innerText=e.name;document.getElementById('cornerCharSlogan').innerText=e.slogan||"";document.getElementById('nodeInfoCorner').style.display="block";const t=document.getElementById('cornerJumpBtn'),n=t.cloneNode(!0);t.parentNode.replaceChild(n,t);n.addEventListener('click',()=>{openCharacterForm(e.id);document.getElementById('nodeInfoCorner').style.display="none"})}}else document.getElementById('nodeInfoCorner').style.display="none"});network.on("doubleClick",function(t){if(t.edges&&t.edges.length){const e=n.find(n=>n.id===t.edges[0]);if(e){const t=currentOC.characters.find(t=>t.id===e.from),n=currentOC.characters.find(t=>t.id===e.to);t&&n&&customPrompt(`编辑 ${t.name} → ${n.name} 的关系`,e.label).then(s=>{s&&s.trim()&&(addDirectedRelation(e.from,e.to,s),renderGraph())})}}});setTimeout(()=>network.fit(),100)}
+
+            // ================== 时间线与故事线 ==================
+            function renderTimelineAndStory(){if(!currentOC)return;document.getElementById('calendarUnitDisplay').innerText=currentOC.calendarUnit;let t=parseInt(document.getElementById('yearFrom')?.value)||-1/0,e=parseInt(document.getElementById('yearTo')?.value)||1/0;const n=currentOC.timelineEvents.filter(s=>s.year>=t&&s.year<=e),s=document.getElementById('timelineVerticalContainer');s&&(s.innerHTML=n.sort((t,e)=>t.year-e.year).map(t=>`<div class="timeline-item"><div class="timeline-year">${currentOC.calendarUnit} ${t.year}</div><div class="timeline-title">📜 ${escapeHtml(t.title)}</div><div class="timeline-desc">${escapeHtml(t.description)}</div>${t.image?`<img class="timeline-image previewable-img" src="${t.image}" onerror="this.style.display='none'">`:''}<div class="item-actions"><button class="editTimelineBtn small-btn" data-id="${t.id}">编辑</button><button class="previewTimelineBtn small-btn" data-id="${t.id}">🔍 预览</button><button class="delTimelineBtn small-btn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div>`).join(''));document.querySelectorAll('.editTimelineBtn').forEach(t=>t.addEventListener('click',()=>editTimelineEvent(t.dataset.id)));document.querySelectorAll('.previewTimelineBtn').forEach(t=>t.addEventListener('click',()=>{const e=currentOC.timelineEvents.sort((t,e)=>t.year-e.year),n=e.findIndex(e=>e.id===t.dataset.id);-1!==n&&openTimelinePreview(e,n)}));document.querySelectorAll('.delTimelineBtn').forEach(t=>t.addEventListener('click',async()=>{await customConfirm("删除事件")&&(currentOC.timelineEvents=currentOC.timelineEvents.filter(e=>e.id!==t.dataset.id),saveCurrentOC(),renderTimelineAndStory())}));const o=document.getElementById('storylineContainer'),i=currentOC.storyline||[];o&&(o.innerHTML=i.sort((t,e)=>t.order-e.order).map(t=>`<div class="storyline-item"><div class="timeline-title">📖 ${escapeHtml(t.title)}</div><div class="timeline-desc">${escapeHtml(t.description)}</div>${t.image?`<img class="storyline-image previewable-img" src="${t.image}" onerror="this.style.display='none'">`:''}<div class="item-actions"><button class="editStoryBtn small-btn" data-id="${t.id}">编辑</button><button class="previewStoryBtn small-btn" data-id="${t.id}">🔍 预览</button><button class="delStoryBtn small-btn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div>`).join(''));document.querySelectorAll('.editStoryBtn').forEach(t=>t.addEventListener('click',()=>editStoryBeat(t.dataset.id)));document.querySelectorAll('.previewStoryBtn').forEach(t=>t.addEventListener('click',()=>{const e=currentOC.storyline.sort((t,e)=>t.order-e.order),n=e.findIndex(e=>e.id===t.dataset.id);-1!==n&&openStorylinePreview(e,n)}));document.querySelectorAll('.delStoryBtn').forEach(t=>t.addEventListener('click',async()=>{await customConfirm("删除剧情节点")&&(currentOC.storyline=currentOC.storyline.filter(e=>e.id!==t.dataset.id),saveCurrentOC(),renderTimelineAndStory())}))}
+            function openTimelinePreview(t,e){openPreviewModal(t,e,'timeline')}
+            function openStorylinePreview(t,e){openPreviewModal(t,e,'storyline')}
+
+            // ================== 世界观 ==================
+            function renderWorldEntries(){const t=document.getElementById('worldTreeContainer');if(!t)return;t.innerHTML='';currentOC.worldTree&&currentOC.worldTree.length?renderWorldTree(t,currentOC.worldTree):t.innerHTML='<div style="text-align:center;padding:1rem;">暂无世界观条目，点击上方按钮添加根节点</div>'}
+            function renderWorldTree(t,e){if(!e||0===e.length)return;e.forEach(e=>{e.images||(e.images=[]);const n=document.createElement('div');n.className='world-item';n.innerHTML=`<div class="world-header"><div class="world-title"><i class="fas fa-folder-open"></i> <span class="world-title-text">${escapeHtml(e.title)}</span></div><div><button class="editWorldTitleBtn" data-id="${e.id}">✏️ 改标题</button><button class="addWorldChildBtn" data-id="${e.id}" style="background:var(--success);">➕ 添加子项</button><button class="previewWorldBtn" data-id="${e.id}">🔍 预览</button><button class="deleteWorldNodeBtn" data-id="${e.id}" style="background:var(--danger);">删除</button><i class="fas fa-chevron-down" style="margin-left:12px;cursor:pointer;"></i></div></div><div class="world-content"><textarea class="world-textarea" data-id="${e.id}" rows="6">${escapeHtml(e.content||'')}</textarea><div class="world-images" id="worldImages-${e.id}"></div><button class="insertWorldImgBtn" data-id="${e.id}">📷 插入图片</button><button class="saveWorldContentBtn" data-id="${e.id}">保存内容</button></div><div class="children-container" id="children-${e.id}"></div>`;t.appendChild(n);const s=n.querySelector('.world-content'),o=n.querySelector('.fa-chevron-down'),i=n.querySelector('.children-container');n.querySelector('.world-title-text');const r=()=>{"none"===i.style.display?(i.style.display='',s.classList.add('active'),o.classList.remove('fa-chevron-up')):(i.style.display='none',s.classList.remove('active'),o.classList.add('fa-chevron-up'))};o.addEventListener('click',r);n.querySelector('.editWorldTitleBtn').addEventListener('click',async()=>{const t=await customPrompt("修改标题",e.title);t&&(e.title=t,saveCurrentOC(),renderWorldEntries())});n.querySelector('.addWorldChildBtn').addEventListener('click',async()=>{const t=await customPrompt("子项名称","新节点");t&&(e.children||(e.children=[]),e.children.push({id:Date.now().toString(),title:t,content:"",images:[],children:[]}),saveCurrentOC(),renderWorldEntries())});n.querySelector('.previewWorldBtn').addEventListener('click',()=>{const t=flattenWorldNodes(currentOC.worldTree),n=t.findIndex(t=>t.id===e.id);-1!==n&&openPreviewModal(t,n,'world')});n.querySelector('.deleteWorldNodeBtn').addEventListener('click',async()=>{await customConfirm("删除此项及所有子项？")&&(function t(e,n){for(let s=0;s<e.length;s++)if(e[s].id===n)return e.splice(s,1),!0;else if(e[s].children&&t(e[s].children,n))return!0;return!1}(currentOC.worldTree,e.id),saveCurrentOC(),renderWorldEntries())});n.querySelector('.saveWorldContentBtn').addEventListener('click',()=>{e.content=n.querySelector('.world-textarea').value;saveCurrentOC()});const a=()=>{const t=n.querySelector(`#worldImages-${e.id}`);if(!t)return;t.innerHTML=e.images.map((t,e)=>`<div class="world-image-item"><img class="previewable-img" src="${t}"><div class="delete-world-img" data-idx="${e}">×</div></div>`).join('');t.querySelectorAll('.delete-world-img').forEach(t=>t.addEventListener('click',t=>{t.stopPropagation();e.images.splice(parseInt(t.target.dataset.idx),1);saveCurrentOC();a()}))};n.querySelector('.insertWorldImgBtn').addEventListener('click',()=>{insertImageModal(t=>{e.images.push(t);saveCurrentOC();a()})});a();e.children&&e.children.length?renderWorldTree(i,e.children):i.style.display='none'})}
+            function flattenWorldNodes(t,e=[]){return t.forEach(t=>{e.push(t);t.children&&flattenWorldNodes(t.children,e)}),e}
+
+            // ================== 阵营 ==================
+            function renderFactions(){if(!currentOC)return;const t=document.getElementById('factionsContainer');if(!t)return;const e=currentOC.factions||[];t.innerHTML=e.map(t=>`<div class="faction-card"><img class="faction-avatar previewable-img" src="${t.avatar||'https://api.dicebear.com/7.x/identicon/svg?seed=default'}" onerror="this.src='https://api.dicebear.com/7.x/identicon/svg?seed=default'"><div class="faction-info"><div class="flex-between"><h3>${escapeHtml(t.name)}</h3><div><button class="editFactionBtn" data-id="${t.id}">编辑</button><button class="previewFactionBtn" data-id="${t.id}">🔍 预览</button><button class="delFactionBtn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div><p>${escapeHtml(t.description)}</p><p><strong>规模：</strong> ${escapeHtml(t.size||'未设置')}</p><p><strong>成员 (${getMembersByCamp(t.name).length})：</strong></p><div id="members-${t.id}" class="member-list"></div><div class="flex-between" style="margin-top:12px;"><span>➕ 添加成员：</span><input type="text" id="addMemberInput-${t.id}" placeholder="输入角色名" style="width:120px;"><button class="addMemberBtn" data-faction="${t.id}">加入</button></div></div></div>`).join('');e.forEach(t=>{const n=document.getElementById(`members-${t.id}`);if(n){const s=getMembersByCamp(t.name);n.innerHTML=s.map(e=>`<div class="member-tag">${escapeHtml(e.name)} <button class="removeMemberBtn" data-charid="${e.id}" data-factionname="${escapeHtml(t.name)}" style="background:none;color:#f87171;cursor:pointer;"><i class="fas fa-times-circle"></i></button></div>`).join('');0===s.length&&(n.innerHTML='<span>暂无成员</span>')}});document.querySelectorAll('.editFactionBtn').forEach(t=>t.addEventListener('click',()=>editFaction(t.dataset.id)));document.querySelectorAll('.previewFactionBtn').forEach(t=>t.addEventListener('click',()=>{const n=e.findIndex(e=>e.id===t.dataset.id);-1!==n&&openPreviewModal(e,n,'faction')}));document.querySelectorAll('.delFactionBtn').forEach(t=>t.addEventListener('click',async()=>{await customConfirm("删除阵营？")&&(currentOC.factions=currentOC.factions.filter(e=>e.id!==t.dataset.id),saveCurrentOC(),renderFactions())}));document.querySelectorAll('.addMemberBtn').forEach(t=>t.addEventListener('click',()=>{const e=t.dataset.faction,n=currentOC.factions.find(t=>t.id===e);if(!n)return;const s=document.getElementById(`addMemberInput-${e}`).value.trim();if(!s)return showMessage("请输入角色名",!0);const o=currentOC.characters.find(t=>t.name===s);if(!o)return showMessage(`角色“${s}”不存在`,!0);o.camp===n.name?showMessage(`${o.name} 已在此阵营`,!0):(o.camp=n.name,saveCurrentOC(),renderFactions(),renderCharacters(),showMessage(`${o.name} 已加入 ${n.name}`))}));document.querySelectorAll('.removeMemberBtn').forEach(t=>t.addEventListener('click',()=>{const e=t.dataset.charid,n=currentOC.characters.find(t=>t.id===e);n&&(n.camp="",saveCurrentOC(),renderFactions(),renderCharacters())}))}
+            function getMembersByCamp(t){return currentOC.characters.filter(e=>e.camp===t)}
+
+            // ================== 草稿箱 ==================
+            function renderDrafts(){const t=document.getElementById('draftsList');if(!t)return;const e=currentOC.drafts||[];t.innerHTML=e.map(t=>`<div class="draft-item"><div><strong>${escapeHtml(t.title)}</strong><br><span style="font-size:0.7rem;">${escapeHtml(t.content.substring(0,50))}...</span></div><div><button class="editDraftBtn" data-id="${t.id}">编辑</button><button class="previewDraftBtn" data-id="${t.id}">🔍 预览</button><button class="deleteDraftBtn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div>`).join('');document.querySelectorAll('.editDraftBtn').forEach(t=>t.addEventListener('click',()=>editDraft(t.dataset.id)));document.querySelectorAll('.previewDraftBtn').forEach(t=>t.addEventListener('click',()=>{const n=(currentOC.drafts||[]).findIndex(e=>e.id===t.dataset.id);-1!==n&&openPreviewModal(currentOC.drafts,n,'draft')}));document.querySelectorAll('.deleteDraftBtn').forEach(t=>t.addEventListener('click',async()=>{await customConfirm("删除草稿？")&&(currentOC.drafts=currentOC.drafts.filter(e=>e.id!==t.dataset.id),saveCurrentOC(),renderDrafts())}))}
+            async function editDraft(t){let e=currentOC.drafts.find(n=>n.id===t);if(!e)return;const n=await customPrompt("草稿标题",e.title);if(null===n)return;const s=await customPrompt("草稿内容",e.content,"输入内容...");null!==s&&(e.title=n,e.content=s,saveCurrentOC(),showMessage("草稿已保存"))}
+            async function newDraft(){const t=await customPrompt("草稿标题","新草稿");t&&(currentOC.drafts.push({id:Date.now().toString(),title:t,content:""}),saveCurrentOC(),showMessage("草稿已创建"))}
+            document.getElementById('newDraftBtn')?.addEventListener('click',newDraft);
+
+            // ================== 图片库 ==================
+            function renderImages(){const t=document.getElementById('imagesList');if(!t)return;const e=currentOC.images||[];t.innerHTML=e.map(t=>`<div class="image-card" data-id="${t.id}"><img src="${t.data}" style="width:100%;height:100px;object-fit:cover;border-radius:0.5rem;" class="previewable-img"><div class="flex-between" style="margin-top:4px;"><span class="img-name" style="font-size:0.7rem;cursor:pointer;" title="双击修改名称">${escapeHtml(t.name||'图片')}</span><button class="deleteImageBtn" data-id="${t.id}" style="background:var(--danger);padding:2px 6px;">🗑️</button></div></div>`).join('');t.querySelectorAll('.image-card').forEach(t=>{t.addEventListener('click',n=>{if(n.target.closest('button'))return;const s=e.findIndex(e=>e.id===t.dataset.id);-1!==s&&openPreviewModal(e,s,'image')})});document.querySelectorAll('.deleteImageBtn').forEach(t=>t.addEventListener('click',async t=>{t.stopPropagation();await customConfirm("删除图片？")&&(currentOC.images=currentOC.images.filter(e=>e.id!==t.target.dataset.id),saveCurrentOC(),renderImages())}));document.querySelectorAll('.img-name').forEach(t=>t.addEventListener('dblclick',async t=>{const e=t.target.closest('.image-card').dataset.id,n=currentOC.images.find(t=>t.id===e);if(n){const t=await customPrompt("修改图片名称",n.name);t&&(n.name=t,saveCurrentOC(),renderImages())}}))}
+            function uploadImage(){insertImageModal(t=>{currentOC.images.push({id:Date.now().toString(),data:t,name:`图片_${Date.now()}`});saveCurrentOC();renderImages();showMessage("图片已添加")})}
+            document.getElementById('uploadImageBtn')?.addEventListener('click',uploadImage);
+
+            // ================== 预览模态框 ==================
+            function openPreviewModal(t,e,n){if(!t.length)return;const s=document.createElement('div');s.className='custom-modal';let o='';if('timeline'===n){const i=t[e];o=`<h3>📜 ${escapeHtml(i.title)}</h3><p><strong>${currentOC.calendarUnit} ${i.year}</strong></p><p>${escapeHtml(i.description)}</p>${i.image?`<img src="${i.image}" style="max-width:100%;max-height:300px;border-radius:0.5rem;">`:''}`}else if('storyline'===n){const i=t[e];o=`<h3>📖 ${escapeHtml(i.title)}</h3><p>${escapeHtml(i.description)}</p>${i.image?`<img src="${i.image}" style="max-width:100%;max-height:300px;border-radius:0.5rem;">`:''}`}else if('world'===n){const i=t[e];o=`<h3>🌍 ${escapeHtml(i.title)}</h3><div>${escapeHtml(i.content||'无内容')}</div>${i.images?.length?i.images.map(t=>`<img src="${t}" style="max-width:100px;margin:4px;border-radius:0.5rem;">`).join(''):''}`}else if('faction'===n){const i=t[e],r=getMembersByCamp(i.name);o=`<h3>${escapeHtml(i.name)}</h3><p>${escapeHtml(i.description)}</p><p><strong>规模：</strong> ${escapeHtml(i.size||'未设置')}</p><p><strong>成员：</strong> ${r.map(t=>escapeHtml(t.name)).join('、')||'无'}</p>${i.avatar?`<img src="${i.avatar}" style="max-width:100px;border-radius:0.5rem;">`:''}`}else if('draft'===n){const i=t[e];o=`<h3>📝 ${escapeHtml(i.title)}</h3><div style="white-space:pre-wrap;">${escapeHtml(i.content)}</div>`}else if('image'===n){const i=t[e];o=`<h3>${escapeHtml(i.name||'图片')}</h3><img src="${i.data}" style="max-width:100%;max-height:70vh;border-radius:0.5rem;">`}s.innerHTML=`<div class="custom-modal-content" style="max-width:600px;">${o}<div class="reader-nav"><button id="prevItemBtn" ${0===e?'disabled':''}>◀ 上一页</button><span>${e+1}/${t.length}</span><button id="nextItemBtn" ${e===t.length-1?'disabled':''}>下一页 ▶</button><button id="closePreviewBtn" class="secondary">关闭</button></div></div>`;document.body.appendChild(s);s.querySelector('#prevItemBtn').onclick=()=>{s.remove();openPreviewModal(t,e-1,n)};s.querySelector('#nextItemBtn').onclick=()=>{s.remove();openPreviewModal(t,e+1,n)};s.querySelector('#closePreviewBtn').onclick=()=>s.remove()}
+
+            // ================== 时间线编辑 ==================
+            function editTimelineEvent(t=null){let e=t?currentOC.timelineEvents.find(n=>n.id===t):null;const n=!e;n&&(e={id:Date.now().toString(),year:1e3,title:"",description:"",image:""});const s=document.createElement('div');s.className='custom-modal';s.innerHTML=`<div class="custom-modal-content"><h3>${n?'新增大事记':'编辑大事记'}</h3><label>年份</label><input id="evYear" value="${e.year}" type="number"><label>标题</label><input id="evTitle" value="${escapeHtml(e.title)}"><label>描述</label><textarea id="evDesc">${escapeHtml(e.description)}</textarea><div><label>图片</label><div><button id="insertTimelineImageBtn" type="button">📷 插入图片</button><span id="imagePreview"></span></div><input type="hidden" id="evImage" value="${e.image||''}"></div><div><button id="saveEvBtn">保存</button><button id="closeEvBtn" class="secondary">取消</button></div></div>`;document.body.appendChild(s);const o=s.querySelector('#imagePreview'),i=s.querySelector('#evImage');e.image&&(o.innerHTML=`<img src="${e.image}" style="max-height:60px;border-radius:4px;">`);s.querySelector('#insertTimelineImageBtn').addEventListener('click',()=>{insertImageModal(t=>{i.value=t;o.innerHTML=`<img src="${t}" style="max-height:60px;">`})});s.querySelector('#closeEvBtn').onclick=()=>s.remove();s.querySelector('#saveEvBtn').onclick=()=>{e.year=parseInt(s.querySelector('#evYear').value);e.title=s.querySelector('#evTitle').value;e.description=s.querySelector('#evDesc').value;e.image=i.value;n&&currentOC.timelineEvents.push(e);saveCurrentOC();s.remove();showMessage("大事记已保存")}}
+
+            // ================== 故事线编辑 ==================
+            function editStoryBeat(t=null){let e=t?currentOC.storyline.find(n=>n.id===t):null;const n=!e;n&&(e={id:Date.now().toString(),title:"",description:"",order:currentOC.storyline.length+1,image:""});const s=document.createElement('div');s.className='custom-modal';s.innerHTML=`<div class="custom-modal-content"><h3>${n?'添加剧情节点':'编辑节点'}</h3><label>标题</label><input id="beatTitle" value="${escapeHtml(e.title)}"><label>描述</label><textarea id="beatDesc">${escapeHtml(e.description)}</textarea><div><label>图片</label><div><button id="insertStoryImageBtn" type="button">📷 插入图片</button><span id="imagePreview"></span></div><input type="hidden" id="beatImage" value="${e.image||''}"></div><div><button id="saveBeatBtn">保存</button><button id="closeBeatBtn" class="secondary">取消</button></div></div>`;document.body.appendChild(s);const o=s.querySelector('#imagePreview'),i=s.querySelector('#beatImage');e.image&&(o.innerHTML=`<img src="${e.image}" style="max-height:60px;border-radius:4px;">`);s.querySelector('#insertStoryImageBtn').addEventListener('click',()=>{insertImageModal(t=>{i.value=t;o.innerHTML=`<img src="${t}" style="max-height:60px;">`})});s.querySelector('#closeBeatBtn').onclick=()=>s.remove();s.querySelector('#saveBeatBtn').onclick=()=>{e.title=s.querySelector('#beatTitle').value;e.description=s.querySelector('#beatDesc').value;e.image=i.value;n&&currentOC.storyline.push(e);saveCurrentOC();s.remove();showMessage("剧情节点已保存")}}
+
+            // ================== 阵营编辑 ==================
+            function editFaction(t=null){let e=t?currentOC.factions.find(n=>n.id===t):null;const n=!e;n&&(e={id:Date.now().toString(),name:"",description:"",size:"",avatar:""});const s=document.createElement('div');s.className='custom-modal';s.innerHTML=`<div class="custom-modal-content"><h3>${n?'新建阵营':'编辑阵营'}</h3><label>名称</label><input id="facName" value="${escapeHtml(e.name)}"><label>描述</label><textarea id="facDesc">${escapeHtml(e.description)}</textarea><label>规模</label><input id="facSize" value="${escapeHtml(e.size)}"><div><label>头像</label><div><button id="insertFactionAvatarBtn">📷 插入图片</button><span id="avatarPreview"></span></div><input type="hidden" id="facAvatar" value="${escapeHtml(e.avatar)}"></div><div><button id="saveFacBtn">保存</button><button id="closeFacBtn" class="secondary">取消</button></div></div>`;document.body.appendChild(s);const o=s.querySelector('#avatarPreview'),i=s.querySelector('#facAvatar');e.avatar&&(o.innerHTML=`<img src="${e.avatar}" style="max-height:60px;border-radius:4px;">`);s.querySelector('#insertFactionAvatarBtn').addEventListener('click',()=>{insertImageModal(t=>{i.value=t;o.innerHTML=`<img src="${t}" style="max-height:60px;">`})});s.querySelector('#closeFacBtn').onclick=()=>s.remove();s.querySelector('#saveFacBtn').onclick=()=>{e.name=s.querySelector('#facName').value;e.description=s.querySelector('#facDesc').value;e.size=s.querySelector('#facSize').value;e.avatar=i.value;n&&currentOC.factions.push(e);saveCurrentOC();s.remove();showMessage("阵营已保存")}}
+
+            // ================== 正文与IF线 ==================
+            let currentChapterSearch="",currentIfSearch="";
+            function renderMainChapters(){let t=currentOC.mainChapters||[];currentChapterSearch&&(t=t.filter(t=>t.title.toLowerCase().includes(currentChapterSearch.toLowerCase())));const e=document.getElementById('chapterList');e&&(e.innerHTML=t.map(t=>`<div class="chapter-item" data-id="${t.id}"><span>📘 ${escapeHtml(t.title)}</span><div><button class="editChapterBtn" data-id="${t.id}">编辑</button><button class="previewChapterBtn" data-id="${t.id}" style="background:var(--primary-light);">📖 阅读</button><button class="deleteChapterBtn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div>`).join(''));document.querySelectorAll('.editChapterBtn').forEach(t=>t.addEventListener('click',()=>{const e=currentOC.mainChapters.find(n=>n.id===t.dataset.id);e&&openChapterEditor(e)}));document.querySelectorAll('.previewChapterBtn').forEach(t=>t.addEventListener('click',()=>{const e=currentOC.mainChapters.find(n=>n.id===t.dataset.id);e&&openReader(e.id,'main')}));document.querySelectorAll('.deleteChapterBtn').forEach(t=>t.addEventListener('click',async()=>{await customConfirm("删除章节？")&&(currentOC.mainChapters=currentOC.mainChapters.filter(e=>e.id!==t.dataset.id),saveCurrentOC(),renderMainChapters())}));const n=document.getElementById('chapterCount');n&&(n.innerText=`共 ${t.length} 章`)}
+            function openChapterEditor(t){const e=document.createElement('div');e.className='custom-modal';e.innerHTML=`<div class="custom-modal-content"><h3>编辑章节：${escapeHtml(t.title)}</h3><textarea id="chapterEditContent" style="min-height:400px;">${escapeHtml(t.content)}</textarea><div class="flex-between"><button id="saveChapterEditBtn">保存</button><button id="closeChapterEditBtn" class="secondary">取消</button></div></div>`;document.body.appendChild(e);e.querySelector('#saveChapterEditBtn').onclick=()=>{t.content=e.querySelector('#chapterEditContent').value;saveCurrentOC();e.remove();showMessage("章节已保存")};e.querySelector('#closeChapterEditBtn').onclick=()=>e.remove()}
+            function openReader(t,e){let n="main"===e?currentOC.mainChapters||[]:currentOC.ifChapters||[];const s=[...n].sort((t,e)=>t.title.localeCompare(e.title)),o=s.findIndex(n=>n.id===t);if(-1===o)return;const i=s[o],r=o>0?s[o-1]:null,a=o<s.length-1?s[o+1]:null,l=document.createElement('div');l.className='custom-modal';l.innerHTML=`<div class="custom-modal-content reader-modal" style="max-width:800px;"><div class="reader-title">${escapeHtml(i.title)}</div><div class="reader-content">${escapeHtml(i.content).replace(/\n/g,'<br>')}</div><div class="reader-nav"><button id="readerPrevBtn" ${r?'':'disabled'}>◀ 上一章</button><button id="readerCloseBtn" class="secondary">关闭</button><button id="readerNextBtn" ${a?'':'disabled'}>下一章 ▶</button></div></div>`;document.body.appendChild(l);r&&(l.querySelector('#readerPrevBtn').onclick=()=>{l.remove();openReader(r.id,e)});a&&(l.querySelector('#readerNextBtn').onclick=()=>{l.remove();openReader(a.id,e)});l.querySelector('#readerCloseBtn').onclick=()=>l.remove()}
+           function renderIfChapters(){let t=currentOC.ifChapters||[];currentIfSearch&&(t=t.filter(t=>t.title.toLowerCase().includes(currentIfSearch.toLowerCase())));const e=document.getElementById('ifChapterList');e&&(e.innerHTML=t.map(t=>`<div class="chapter-item" data-id="${t.id}"><span>🌿 ${escapeHtml(t.title)}</span><div><button class="editIfBtn" data-id="${t.id}">编辑</button><button class="previewIfBtn" data-id="${t.id}" style="background:var(--primary-light);">📖 阅读</button><button class="deleteIfBtn" data-id="${t.id}" style="background:var(--danger);">删除</button></div></div>`).join(''));document.querySelectorAll('.editIfBtn').forEach(t=>t.addEventListener('click',()=>{const e=currentOC.ifChapters.find(n=>n.id===t.dataset.id);e&&openIfEditor(e)}));document.querySelectorAll('.previewIfBtn').forEach(t=>t.addEventListener('click',()=>{const e=currentOC.ifChapters.find(n=>n.id===t.dataset.id);e&&openReader(e.id,'if')}));document.querySelectorAll('.deleteIfBtn').forEach(t=>t.addEventListener('click',async()=>{await customConfirm("删除IF线？")&&(currentOC.ifChapters=currentOC.ifChapters.filter(e=>e.id!==t.dataset.id),saveCurrentOC(),renderIfChapters())}));const n=document.getElementById('ifCount');n&&(n.innerText=`共 ${t.length} 条`)}
+            function openIfEditor(t){const e=document.createElement('div');e.className='custom-modal';e.innerHTML=`<div class="custom-modal-content"><h3>编辑IF线：${escapeHtml(t.title)}</h3><textarea id="ifEditContent" style="min-height:400px;">${escapeHtml(t.content)}</textarea><div class="flex-between"><button id="saveIfEditBtn">保存</button><button id="closeIfEditBtn" class="secondary">取消</button></div></div>`;document.body.appendChild(e);e.querySelector('#saveIfEditBtn').onclick=()=>{t.content=e.querySelector('#ifEditContent').value;saveCurrentOC();e.remove();showMessage("IF线已保存")};e.querySelector('#closeIfEditBtn').onclick=()=>e.remove()}
+            document.getElementById('newChapterBtn')?.addEventListener('click',async()=>{const t=await customPrompt("章节标题");t&&(currentOC.mainChapters.push({id:Date.now().toString(),title:t,content:""}),saveCurrentOC(),showMessage("章节已创建"))});
+            document.getElementById('newIfChapterBtn')?.addEventListener('click',async()=>{const t=await customPrompt("IF线标题");t&&(currentOC.ifChapters.push({id:Date.now().toString(),title:t,content:""}),saveCurrentOC(),showMessage("IF线已创建"))});
+            document.getElementById('previewChapterBtn')?.addEventListener('click',()=>{currentOC.mainChapters.length?openReader(currentOC.mainChapters[0].id,'main'):showMessage("暂无章节",!0)});
+            document.getElementById('searchChapterBtn')?.addEventListener('click',()=>{currentChapterSearch=document.getElementById('chapterSearch').value;renderMainChapters()});
+            document.getElementById('searchIfBtn')?.addEventListener('click',()=>{currentIfSearch=document.getElementById('ifSearch').value;renderIfChapters()});
+
+            // ================== 导航与初始化 ==================
+            async function login(t,e){let n=accounts.find(s=>s.username===t);if(n&&n.password===e)return currentAccount=n,currentOC=JSON.parse(JSON.stringify(n.ocData)),currentOC.drafts||(currentOC.drafts=[]),currentOC.images||(currentOC.images=[]),document.getElementById('loginPanel').style.display='none',document.getElementById('appMain').style.display='flex',document.getElementById('loginThemeSelector').style.display='none',document.getElementById('currentUserSpan').innerHTML=`${escapeHtml(t)}${n.secret?' (涉密)':''}`,document.getElementById('secretAlert').innerHTML=n.secret?'<div style="background:var(--danger);padding:4px;border-radius:8px;">涉密账号</div>':'',switchView('graph'),showMessage(`欢迎回来，${t}`),!0;showMessage("账号或密码错误",!0)}
+            function logout(){currentAccount=null;currentOC=null;document.getElementById('appMain').style.display='none';document.getElementById('loginPanel').style.display='flex';document.getElementById('loginThemeSelector').style.display='flex';setRandomGreeting();network&&network.destroy()}
+            function switchView(t){
+                document.querySelectorAll('.view-pane').forEach(t=>t.style.display='none');
+                "graph"===t&&(document.getElementById('graphView').style.display='block',renderGraph());
+                "characters"===t&&(document.getElementById('charactersView').style.display='block',renderCharacters());
+                "timeline"===t&&(document.getElementById('timelineView').style.display='block',renderTimelineAndStory());
+                "world"===t&&(document.getElementById('worldView').style.display='block',renderWorldEntries());
+                "factions"===t&&(document.getElementById('factionsView').style.display='block',renderFactions());
+                "drafts"===t&&(document.getElementById('draftsView').style.display='block',renderDrafts());
+                "images"===t&&(document.getElementById('imagesView').style.display='block',renderImages());
+                "mainstory"===t&&(document.getElementById('mainstoryView').style.display='block',renderMainChapters());
+                "ifline"===t&&(document.getElementById('iflineView').style.display='block',renderIfChapters());
+            }
+
+            document.getElementById('doLoginBtn').onclick=()=>login(document.getElementById('loginUsername').value,document.getElementById('loginPassword').value);
+            document.getElementById('openAccountManageBtn').onclick=openAccountManager;
+            document.getElementById('logoutBtn').onclick=logout;
+            document.querySelectorAll('.nav-item').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.nav-item').forEach(t=>t.classList.remove('active'));t.classList.add('active');switchView(t.dataset.view)}));
+            document.getElementById('newCharacterBtn')?.addEventListener('click',()=>openCharacterForm(null));
+            document.getElementById('addRelationBtnGraph')?.addEventListener('click',()=>{const t=document.getElementById('relSource').value.trim(),e=document.getElementById('relTarget').value.trim(),n=document.getElementById('relType').value.trim();t&&e&&n?addRelationFromBuilder(t,e,n):showMessage("请填写完整",!0)});
+            document.getElementById('addFactionBtn')?.addEventListener('click',()=>editFaction(null));
+            document.getElementById('addTimelineEventBtn')?.addEventListener('click',()=>editTimelineEvent(null));
+            document.getElementById('addStoryBeatBtn')?.addEventListener('click',()=>editStoryBeat(null));
+            document.getElementById('applyYearRangeBtn')?.addEventListener('click',()=>renderTimelineAndStory());
+            document.getElementById('calendarUnitDisplay')?.addEventListener('dblclick',async()=>{const t=await customPrompt("纪元名称",currentOC.calendarUnit);t&&(currentOC.calendarUnit=t,saveCurrentOC(),renderTimelineAndStory())});
+            document.querySelectorAll('.story-tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.story-tab').forEach(t=>t.classList.remove('active'));t.classList.add('active');"timeline"===t.dataset.tab?(document.getElementById('timelinePanel').style.display='block',document.getElementById('storylinePanel').style.display='none'):(document.getElementById('timelinePanel').style.display='none',document.getElementById('storylinePanel').style.display='block')}));
+            document.getElementById('addWorldRootBtn')?.addEventListener('click',async()=>{const t=await customPrompt("根节点名称","世界观");t&&(currentOC.worldTree||(currentOC.worldTree=[]),currentOC.worldTree.push({id:Date.now().toString(),title:t,content:"",images:[],children:[]}),saveCurrentOC(),renderWorldEntries())});
+
+            initAccounts();setRandomGreeting();loadLoginTheme();
+        })();
+    </script>
+</body>
+</html>
